@@ -296,6 +296,10 @@ body {
           <input type="text" id="input-bank-name" placeholder="输入词库名称，如：第3周单词" autocomplete="off">
           <button class="btn btn-primary" onclick="createBank()">+ 新建词库</button>
         </div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="btn btn-outline btn-sm" onclick="exportBanks()">📤 导出所有词库</button>
+          <button class="btn btn-outline btn-sm" onclick="importBanks()">📥 导入词库</button>
+        </div>
 
         <div class="wordbank-list" id="wordbank-list">
           <div class="empty-state">
@@ -518,6 +522,39 @@ function createBank() {
   input.value = '';
   showToast(`词库「${name}」已创建`);
   renderBankList();
+}
+
+function exportBanks() {
+  const data = getData();
+  if (data.banks.length === 0) { showToast('没有词库可导出'); return; }
+  const json = JSON.stringify(data.banks, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    showToast(`已导出 ${data.banks.length} 个词库到剪贴板`);
+  }).catch(() => {
+    prompt('请手动复制（Ctrl+C）:', json);
+  });
+}
+
+function importBanks() {
+  const json = prompt('请粘贴之前导出的词库数据（JSON格式）：');
+  if (!json) return;
+  try {
+    const banks = JSON.parse(json);
+    if (!Array.isArray(banks)) throw new Error('格式错误');
+    const data = getData();
+    let added = 0;
+    banks.forEach(b => {
+      if (!data.banks.find(x => x.name === b.name)) {
+        data.banks.push({...b, id: generateId()});
+        added++;
+      }
+    });
+    saveData(data);
+    showToast(`成功导入 ${added} 个新词库`);
+    if (added > 0) renderAll();
+  } catch(e) {
+    showToast('导入失败，请检查数据格式');
+  }
 }
 
 function selectBank(bankId) {
