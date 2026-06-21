@@ -84,6 +84,30 @@ body {
 .btn-outline:hover { background: rgba(247,151,30,0.1); }
 .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
 .btn-xs { padding: 3px 8px; font-size: 11px; border-radius: 4px; }
+.btn-diff {
+  padding: 8px 16px; border: 2px solid #2a3a4a; border-radius: 10px;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  background: transparent; color: #8899aa;
+}
+.btn-diff:hover { border-color: #f7971e; color: #f7971e; }
+.btn-diff.active { background: linear-gradient(135deg, #f7971e, #ffd200); color: #1a1a2e; border-color: transparent; box-shadow: 0 4px 12px rgba(247,151,30,0.4); }
+
+.btn-hint {
+  padding: 4px 10px; border: 1px solid #2a3a4a; border-radius: 6px;
+  font-size: 12px; cursor: pointer; transition: all 0.2s;
+  background: transparent; color: #5a6a7a;
+}
+.btn-hint:hover { border-color: #fdcb6e; color: #fdcb6e; }
+.q-translation {
+  margin-top: 8px; padding: 8px 12px; background: rgba(253,203,110,0.08);
+  border-radius: 6px; font-size: 13px; color: #fdcb6e; display: none;
+  border-left: 3px solid #fdcb6e; line-height: 1.6;
+}
+.q-translation.show { display: block; }
+
+.difficulty-select {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+}
 
 /* 测验信息条 */
 .quiz-info-bar {
@@ -347,24 +371,32 @@ body {
   <!-- 左侧主区域 -->
   <div class="main-col">
     <div class="card">
+      <!-- 难度选择 -->
+      <div class="difficulty-select" id="difficulty-select">
+        <button class="btn-diff active" onclick="selectDifficulty('any', this)" data-diff="any">🎲 随意</button>
+        <button class="btn-diff" onclick="selectDifficulty('easy', this)" data-diff="easy">🟢 简单</button>
+        <button class="btn-diff" onclick="selectDifficulty('medium', this)" data-diff="medium">🟡 中等</button>
+        <button class="btn-diff" onclick="selectDifficulty('hard', this)" data-diff="hard">🔴 困难</button>
+      </div>
+
       <!-- 测验信息 -->
       <div class="quiz-info-bar" id="quiz-info-bar">
         <span>📝 <strong>每次 10 题</strong></span>
         <span>🎯 <strong>涵盖 9 种时态</strong></span>
-        <span>📊 难度随机分布</span>
+        <span id="diff-label">📊 难度随机分布</span>
       </div>
 
       <!-- 题目区域 -->
       <div id="quiz-area">
         <div style="text-align:center;padding:40px 20px;color:#5a6a7a;">
           <div style="font-size:48px;margin-bottom:12px;">⏰</div>
-          <p>点击下方按钮开始时态练习</p>
+          <p>选择难度，点击下方按钮开始时态练习</p>
         </div>
       </div>
 
       <!-- 按钮区 -->
       <div id="quiz-actions" style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="startQuiz()">🔄 随机出题（10道）</button>
+        <button class="btn btn-primary" onclick="startQuiz()">🔄 出题（10道）</button>
         <button class="btn btn-success" onclick="submitQuiz()" id="btn-submit" disabled>✅ 提交检测</button>
       </div>
 
@@ -592,77 +624,69 @@ const TENSE_LESSONS = {
   }
 };
 
-// ==================== 题库 ====================
+// ==================== 题库（单空 + 中文翻译） ====================
 const QUESTION_BANK = [
   // ===== 一般现在时 =====
-  { sentence: "The earth ______ (go) around the sun, and the moon ______ (move) around the earth.", answers: ["goes", "moves"], tense: "一般现在时", difficulty: "easy" },
-  { sentence: "My father ______ (not drink) coffee. He ______ (prefer) tea instead.", answers: ["doesn't drink", "prefers"], tense: "一般现在时", difficulty: "easy" },
-  { sentence: "Every morning, Sarah ______ (wake) up at six, ______ (brush) her teeth, and then ______ (go) for a run before breakfast.", answers: ["wakes", "brushes", "goes"], tense: "一般现在时", difficulty: "medium" },
-  { sentence: "If it ______ (rain) tomorrow, we ______ (cancel) the picnic. That's what the teacher told us yesterday.", answers: ["rains", "will cancel"], tense: "一般现在时", difficulty: "hard" },
-  { sentence: "The scientist explained that light ______ (travel) faster than sound, which ______ (be) a basic fact in physics.", answers: ["travels", "is"], tense: "一般现在时", difficulty: "hard" },
+  { sentence: "The sun ______ (rise) in the east every morning.", answer: "rises", tense: "一般现在时", difficulty: "easy", translation: "太阳每天早晨从东边升起。" },
+  { sentence: "My father ______ (not drink) coffee at all.", answer: "doesn't drink", tense: "一般现在时", difficulty: "easy", translation: "我爸爸根本不喝咖啡。" },
+  { sentence: "She usually ______ (go) to school by bus, but today she walks.", answer: "goes", tense: "一般现在时", difficulty: "easy", translation: "她通常坐公交上学，但今天走路。" },
+  { sentence: "The train ______ (leave) at 8 p.m. this evening.", answer: "leaves", tense: "一般现在时", difficulty: "medium", translation: "火车今晚8点出发。" },
+  { sentence: "The teacher told us that light ______ (travel) faster than sound.", answer: "travels", tense: "一般现在时", difficulty: "hard", translation: "老师告诉我们光比声音传播得快。" },
+  { sentence: "If it ______ (rain) tomorrow, we will cancel the picnic.", answer: "rains", tense: "一般现在时", difficulty: "hard", translation: "如果明天下雨，我们就取消野餐。（主将从现）" },
 
   // ===== 一般过去时 =====
-  { sentence: "Yesterday, I ______ (see) an old friend in the street, but I ______ (not recognize) her at first.", answers: ["saw", "didn't recognize"], tense: "一般过去时", difficulty: "easy" },
-  { sentence: "Last summer, my family ______ (go) to Yunnan. We ______ (visit) many beautiful places and ______ (take) hundreds of photos.", answers: ["went", "visited", "took"], tense: "一般过去时", difficulty: "medium" },
-  { sentence: "When I ______ (be) a child, I often ______ (climb) the big tree in our garden and ______ (imagine) I was a brave explorer.", answers: ["was", "climbed", "imagined"], tense: "一般过去时", difficulty: "medium" },
-  { sentence: "The old man ______ (sit) down slowly, ______ (take) out a worn photo from his pocket, and ______ (begin) to tell a story that no one had heard before.", answers: ["sat", "took", "began"], tense: "一般过去时", difficulty: "hard" },
-  { sentence: "She ______ (buy) a new phone last month but ______ (lose) it on the bus just three days ago.", answers: ["bought", "lost"], tense: "一般过去时", difficulty: "medium" },
+  { sentence: "Yesterday I ______ (see) an old friend in the supermarket.", answer: "saw", tense: "一般过去时", difficulty: "easy", translation: "昨天我在超市见到了一位老朋友。" },
+  { sentence: "She ______ (not go) to school yesterday because she was ill.", answer: "didn't go", tense: "一般过去时", difficulty: "easy", translation: "她昨天没去上学，因为生病了。" },
+  { sentence: "My family ______ (move) to this city ten years ago.", answer: "moved", tense: "一般过去时", difficulty: "easy", translation: "我家十年前搬到了这座城市。" },
+  { sentence: "She ______ (buy) a new phone last week but lost it yesterday.", answer: "bought", tense: "一般过去时", difficulty: "medium", translation: "她上周买了个新手机，但昨天丢了。" },
+  { sentence: "When I was young, I often ______ (climb) the big tree in our garden.", answer: "climbed", tense: "一般过去时", difficulty: "medium", translation: "我小时候经常爬我家花园里的大树。" },
+  { sentence: "The old man ______ (sit) down and began to tell a story.", answer: "sat", tense: "一般过去时", difficulty: "medium", translation: "老人坐下来，开始讲一个故事。" },
 
   // ===== 一般将来时 =====
-  { sentence: "I promise I ______ (finish) the report by Friday, and I ______ (send) it to you as soon as possible.", answers: ["will finish", "will send"], tense: "一般将来时", difficulty: "easy" },
-  { sentence: "Look at the dark clouds! It ______ (rain) soon. We'd better ______ (take) an umbrella.", answers: ["is going to rain", "take"], tense: "一般将来时", difficulty: "medium" },
-  { sentence: "Scientists predict that robots ______ (do) most housework for humans in the near future, and people ______ (have) more free time.", answers: ["will do", "will have"], tense: "一般将来时", difficulty: "medium" },
-  { sentence: "The train ______ (leave) at 7:30 tomorrow morning, so we ______ (need) to get up very early.", answers: ["leaves", "will need"], tense: "一般将来时", difficulty: "hard" },
-  { sentence: "Next month, my cousin ______ (fly) to London to study, and she says she ______ (write) to us every week.", answers: ["will fly", "will write"], tense: "一般将来时", difficulty: "easy" },
+  { sentence: "I promise I ______ (call) you as soon as I arrive.", answer: "will call", tense: "一般将来时", difficulty: "easy", translation: "我保证一到就给你打电话。" },
+  { sentence: "She ______ (visit) her grandparents next Sunday.", answer: "will visit", tense: "一般将来时", difficulty: "easy", translation: "她下周日要去看望祖父母。" },
+  { sentence: "Look at the clouds! It ______ (rain) soon.", answer: "is going to rain", tense: "一般将来时", difficulty: "medium", translation: "看那些云！马上就要下雨了。" },
+  { sentence: "Scientists believe robots ______ (do) most housework in the future.", answer: "will do", tense: "一般将来时", difficulty: "medium", translation: "科学家相信未来机器人会做大部分家务。" },
+  { sentence: "I ______ (not tell) anyone about this secret, I promise.", answer: "won't tell", tense: "一般将来时", difficulty: "easy", translation: "我不会把这个秘密告诉任何人，我保证。" },
 
   // ===== 现在进行时 =====
-  { sentence: "Listen! Someone ______ (sing) in the next room. It ______ (sound) like a popular song.", answers: ["is singing", "sounds"], tense: "现在进行时", difficulty: "easy" },
-  { sentence: "Tom ______ (clean) his room now, and his sister ______ (help) him put away the books.", answers: ["is cleaning", "is helping"], tense: "现在进行时", difficulty: "easy" },
-  { sentence: "These days, the students ______ (prepare) for the final exam. They ______ (study) from morning till night.", answers: ["are preparing", "are studying"], tense: "现在进行时", difficulty: "medium" },
-  { sentence: "— Where is your brother? — He ______ (fix) his bike in the garage. He ______ (work) on it for almost an hour.", answers: ["is fixing", "has been working"], tense: "现在进行时", difficulty: "hard" },
-  { sentence: "The children ______ (not play) outside right now because it ______ (rain) heavily.", answers: ["aren't playing", "is raining"], tense: "现在进行时", difficulty: "medium" },
+  { sentence: "Listen! Someone ______ (sing) in the next room.", answer: "is singing", tense: "现在进行时", difficulty: "easy", translation: "听！有人在隔壁房间唱歌。" },
+  { sentence: "Tom ______ (clean) his room right now.", answer: "is cleaning", tense: "现在进行时", difficulty: "easy", translation: "Tom正在打扫他的房间。" },
+  { sentence: "The students ______ (prepare) for the final exam these days.", answer: "are preparing", tense: "现在进行时", difficulty: "medium", translation: "学生们这些天正在准备期末考试。" },
+  { sentence: "We ______ (leave) for Beijing tomorrow morning.", answer: "are leaving", tense: "现在进行时", difficulty: "medium", translation: "我们明天早上要去北京。（进行时表将来）" },
+  { sentence: "Don't make any noise — the baby ______ (sleep).", answer: "is sleeping", tense: "现在进行时", difficulty: "easy", translation: "别出声——宝宝在睡觉。" },
 
   // ===== 现在完成时 =====
-  { sentence: "I ______ (already finish) my homework. Can I ______ (watch) TV now?", answers: ["have already finished", "watch"], tense: "现在完成时", difficulty: "easy" },
-  { sentence: "She ______ (live) in this city since she was born. She ______ (never move) to another place.", answers: ["has lived", "has never moved"], tense: "现在完成时", difficulty: "medium" },
-  { sentence: "— ______ you ever ______ (be) to Shanghai? — Yes, I ______ (go) there twice.", answers: ["Have", "been", "have been"], tense: "现在完成时", difficulty: "medium" },
-  { sentence: "Over the past ten years, technology ______ (change) our lives in ways we never ______ (imagine) before.", answers: ["has changed", "imagined"], tense: "现在完成时", difficulty: "hard" },
-  { sentence: "My friend ______ (not reply) to my message yet, though I ______ (send) it three hours ago.", answers: ["hasn't replied", "sent"], tense: "现在完成时", difficulty: "hard" },
+  { sentence: "I ______ (already finish) my homework.", answer: "have already finished", tense: "现在完成时", difficulty: "easy", translation: "我已经完成作业了。" },
+  { sentence: "She ______ (live) here since she was a child.", answer: "has lived", tense: "现在完成时", difficulty: "medium", translation: "她从小就一直住在这里。" },
+  { sentence: "______ you ever ______ (be) to the Great Wall?", answer: "have been", tense: "现在完成时", difficulty: "medium", translation: "你去过长城吗？" },
+  { sentence: "He ______ (not reply) to my message yet.", answer: "hasn't replied", tense: "现在完成时", difficulty: "medium", translation: "他还没有回复我的消息。" },
+  { sentence: "Technology ______ (change) our lives greatly in the past decade.", answer: "has changed", tense: "现在完成时", difficulty: "hard", translation: "过去十年，科技极大地改变了我们的生活。" },
 
   // ===== 过去完成时 =====
-  { sentence: "By the time I got to the cinema, the movie ______ (already start). I ______ (miss) the first ten minutes.", answers: ["had already started", "missed"], tense: "过去完成时", difficulty: "medium" },
-  { sentence: "She realized she ______ (leave) her phone at the restaurant after she ______ (get) on the bus.", answers: ["had left", "got"], tense: "过去完成时", difficulty: "medium" },
-  { sentence: "Before he ______ (become) a famous writer, he ______ (work) as a waiter and ______ (live) in a tiny apartment for five years.", answers: ["became", "had worked", "had lived"], tense: "过去完成时", difficulty: "hard" },
-  { sentence: "The teacher asked us if we ______ (finish) reading the book, but most of us ______ (not start) it yet at that time.", answers: ["had finished", "hadn't started"], tense: "过去完成时", difficulty: "hard" },
-  { sentence: "I ______ (plan) to visit her, but she ______ (already leave) when I arrived at her house.", answers: ["had planned", "had already left"], tense: "过去完成时", difficulty: "medium" },
+  { sentence: "By the time I arrived, the movie ______ (already start).", answer: "had already started", tense: "过去完成时", difficulty: "medium", translation: "我到的时候，电影已经开始了。" },
+  { sentence: "She realized she ______ (leave) her phone at home.", answer: "had left", tense: "过去完成时", difficulty: "medium", translation: "她意识到她把手机忘在家里了。" },
+  { sentence: "Before he became famous, he ______ (work) as a waiter for years.", answer: "had worked", tense: "过去完成时", difficulty: "medium", translation: "在他出名之前，他已经当了好几年服务员。" },
+  { sentence: "I ______ (plan) to visit her, but she had already left.", answer: "had planned", tense: "过去完成时", difficulty: "hard", translation: "我本打算去看她，但她已经走了。" },
 
   // ===== 过去进行时 =====
-  { sentence: "At 8 o'clock last night, I ______ (watch) a movie with my family. We ______ (have) a great time.", answers: ["was watching", "were having"], tense: "过去进行时", difficulty: "easy" },
-  { sentence: "While my mother ______ (cook) in the kitchen, my father ______ (read) the newspaper in the living room.", answers: ["was cooking", "was reading"], tense: "过去进行时", difficulty: "medium" },
-  { sentence: "I ______ (walk) home when suddenly a dog ______ (run) out and ______ (bark) at me loudly.", answers: ["was walking", "ran", "barked"], tense: "过去进行时", difficulty: "medium" },
-  { sentence: "The students ______ (talk) noisily when the teacher ______ (walk) into the classroom. Everyone ______ (stop) immediately.", answers: ["were talking", "walked", "stopped"], tense: "过去进行时", difficulty: "medium" },
-  { sentence: "At that moment, I ______ (not think) clearly because I ______ (feel) so nervous about the interview that was about to begin.", answers: ["wasn't thinking", "was feeling"], tense: "过去进行时", difficulty: "hard" },
+  { sentence: "At 8 p.m. yesterday, I ______ (watch) TV at home.", answer: "was watching", tense: "过去进行时", difficulty: "easy", translation: "昨晚8点我在家看电视。" },
+  { sentence: "While she ______ (read), the phone suddenly rang.", answer: "was reading", tense: "过去进行时", difficulty: "medium", translation: "她正在看书时，电话突然响了。" },
+  { sentence: "I ______ (walk) home when I met an old friend.", answer: "was walking", tense: "过去进行时", difficulty: "medium", translation: "我正走回家时遇到了一位老朋友。" },
+  { sentence: "The students ______ (talk) noisily when the teacher entered.", answer: "were talking", tense: "过去进行时", difficulty: "medium", translation: "老师进来时，学生们正在大声讲话。" },
 
   // ===== 将来进行时 =====
-  { sentence: "This time tomorrow, I ______ (fly) to Beijing. I ______ (sit) on the plane and looking out at the clouds.", answers: ["will be flying", "will be sitting"], tense: "将来进行时", difficulty: "medium" },
-  { sentence: "At 9 a.m. next Monday, we ______ (take) the math exam. Please don't call me then.", answers: ["will be taking"], tense: "将来进行时", difficulty: "easy" },
-  { sentence: "— ______ you ______ (use) your computer this afternoon? I need to print something. — No, you can use it.", answers: ["Will", "be using"], tense: "将来进行时", difficulty: "medium" },
-  { sentence: "By this summer, she ______ (study) at university. Her whole family ______ (cheer) for her at the graduation ceremony.", answers: ["will be studying", "will be cheering"], tense: "将来进行时", difficulty: "hard" },
-  { sentence: "At this time next year, the construction workers ______ (build) a new bridge over the river, and the old one ______ (tear) down.", answers: ["will be building", "will be being torn"], tense: "将来进行时", difficulty: "hard" },
+  { sentence: "At 9 a.m. next Monday, we ______ (take) the math exam.", answer: "will be taking", tense: "将来进行时", difficulty: "easy", translation: "下周一上午9点，我们将在考数学。" },
+  { sentence: "This time tomorrow I ______ (fly) to Beijing.", answer: "will be flying", tense: "将来进行时", difficulty: "medium", translation: "明天这个时候我正飞往北京。" },
+  { sentence: "Don't call me at 8 p.m. — I ______ (have) dinner then.", answer: "will be having", tense: "将来进行时", difficulty: "medium", translation: "晚上8点别给我打电话——那时我在吃晚饭。" },
+  { sentence: "By next summer, she ______ (study) at a famous university.", answer: "will be studying", tense: "将来进行时", difficulty: "hard", translation: "明年夏天，她将在一所著名大学学习。" },
 
   // ===== 现在完成进行时 =====
-  { sentence: "I am so tired because I ______ (work) in the garden all morning. My back ______ (hurt) now.", answers: ["have been working", "hurts"], tense: "现在完成进行时", difficulty: "medium" },
-  { sentence: "She ______ (study) English for six years, and her spoken English ______ (improve) a lot.", answers: ["has been studying", "has improved"], tense: "现在完成进行时", difficulty: "medium" },
-  { sentence: "How long ______ you ______ (wait) here? Your face looks red — you ______ (stand) in the sun for too long!", answers: ["have", "been waiting", "have been standing"], tense: "现在完成进行时", difficulty: "hard" },
-  { sentence: "The children's clothes are all dirty because they ______ (play) in the mud. Their mother ______ (not notice) yet.", answers: ["have been playing", "hasn't noticed"], tense: "现在完成进行时", difficulty: "hard" },
-  { sentence: "It ______ (rain) heavily since last night, and the river level ______ (rise) quickly. People ______ (worry) about flooding.", answers: ["has been raining", "has been rising", "are worrying"], tense: "现在完成进行时", difficulty: "hard" },
-
-  // ===== 混合时态（一个句子涉及多个时态） =====
-  { sentence: "While Tom ______ (do) his homework, his mother ______ (come) in and ______ (ask) him what he ______ (do).", answers: ["was doing", "came", "asked", "was doing"], tense: "过去进行时", difficulty: "hard" },
-  { sentence: "I ______ (not see) him for years, but I still ______ (remember) the day when we first ______ (meet) in the school library.", answers: ["haven't seen", "remember", "met"], tense: "现在完成时", difficulty: "hard" },
-  { sentence: "By the time she ______ (arrive) at the station, the train ______ (already leave). She ______ (have) to wait for the next one.", answers: ["arrived", "had already left", "had"], tense: "过去完成时", difficulty: "hard" },
-  { sentence: "He said that he ______ (finish) the work by the end of the week, but now it seems he ______ (not complete) it yet.", answers: ["would finish", "hasn't completed"], tense: "一般将来时", difficulty: "hard" },
-  { sentence: "Every time I ______ (visit) my grandparents, they always ______ (ask) me how I ______ (do) at school and what I ______ (want) to be in the future.", answers: ["visit", "ask", "am doing", "want"], tense: "一般现在时", difficulty: "hard" },
+  { sentence: "I am tired because I ______ (work) all morning.", answer: "have been working", tense: "现在完成进行时", difficulty: "medium", translation: "我很累，因为我工作了整整一上午。" },
+  { sentence: "She ______ (study) English for six years.", answer: "has been studying", tense: "现在完成进行时", difficulty: "medium", translation: "她已经学了六年英语了。" },
+  { sentence: "How long ______ you ______ (wait) here?", answer: "have you been waiting", tense: "现在完成进行时", difficulty: "hard", translation: "你在这里等了多久了？" },
+  { sentence: "It ______ (rain) since last night.", answer: "has been raining", tense: "现在完成进行时", difficulty: "medium", translation: "从昨晚起就一直在下雨。" },
+  { sentence: "The children's clothes are dirty because they ______ (play) in the mud.", answer: "have been playing", tense: "现在完成进行时", difficulty: "hard", translation: "孩子们的衣服很脏，因为他们一直在泥里玩。" },
 ];
 
 // ==================== 存储与状态 ====================
@@ -683,6 +707,7 @@ function saveData(data) {
 
 let currentQuiz = null;       // 当前题目数组
 let quizSubmitted = false;    // 是否已提交
+let currentDifficulty = 'any'; // 当前选择的难度
 
 // ==================== 工具函数 ====================
 function shuffle(arr) {
@@ -763,11 +788,30 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeTenseModal();
 });
 
+// ==================== 难度选择 ====================
+function selectDifficulty(diff, btn) {
+  currentDifficulty = diff;
+  document.querySelectorAll('.btn-diff').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const labels = { any: '📊 难度随机分布', easy: '🟢 仅简单难度', medium: '🟡 仅中等难度', hard: '🔴 仅困难难度' };
+  document.getElementById('diff-label').textContent = labels[diff] || labels.any;
+}
+
 // ==================== 出题逻辑 ====================
 function startQuiz() {
-  // 随机选取10道题
-  const shuffled = shuffle(QUESTION_BANK);
-  currentQuiz = shuffled.slice(0, 10);
+  // 根据难度筛选
+  let pool = QUESTION_BANK;
+  if (currentDifficulty !== 'any') {
+    pool = QUESTION_BANK.filter(q => q.difficulty === currentDifficulty);
+    if (pool.length === 0) {
+      showToast('该难度暂无题目，请选择其他难度');
+      return;
+    }
+  }
+  // 随机选取10道题（不够则全取）
+  const shuffled = shuffle(pool);
+  currentQuiz = shuffled.slice(0, Math.min(10, shuffled.length));
   quizSubmitted = false;
 
   renderQuiz();
@@ -783,15 +827,13 @@ function renderQuiz() {
   const area = document.getElementById('quiz-area');
 
   area.innerHTML = currentQuiz.map((q, i) => {
-    // 处理句子：将 ___(word) 替换为填空输入框
-    const blankRegex = /______\s*\(([^)]+)\)/g;
-    let blankIndex = 0;
+    // 将 ______(word) 替换为单空输入框
+    const blankRegex = /______\s*\(([^)]+)\)/;
     const sentenceHtml = q.sentence.replace(blankRegex, (match, word) => {
-      const idx = blankIndex++;
       return `<span class="q-blank">
-        <input type="text" class="q-input" id="quiz-input-${i}-${idx}"
+        <input type="text" class="q-input" id="quiz-input-${i}-0"
           placeholder="${escapeHtml(word)}" autocomplete="off"
-          style="width:${Math.max(140, word.length * 18)}px;display:inline-block;">
+          style="width:${Math.max(140, word.length * 16)}px;display:inline-block;">
       </span>`;
     });
 
@@ -808,10 +850,24 @@ function renderQuiz() {
           <span class="q-difficulty ${diffClass}">${diffLabel}</span>
         </div>
         <div class="q-sentence">${sentenceHtml}</div>
+        <button class="btn-hint" onclick="toggleHint(${i})" id="hint-btn-${i}">💡 查看中文提示</button>
+        <div class="q-translation" id="translation-${i}">${escapeHtml(q.translation || '')}</div>
         <div class="q-feedback" id="feedback-${i}"></div>
       </div>
     `;
   }).join('');
+}
+
+function toggleHint(i) {
+  const transEl = document.getElementById('translation-' + i);
+  const btnEl = document.getElementById('hint-btn-' + i);
+  if (transEl.classList.contains('show')) {
+    transEl.classList.remove('show');
+    btnEl.textContent = '💡 查看中文提示';
+  } else {
+    transEl.classList.add('show');
+    btnEl.textContent = '🔽 隐藏提示';
+  }
 }
 
 function resetSubmitBtn() {
@@ -873,55 +929,35 @@ function submitQuiz() {
   btn.disabled = true;
 
   let correctCount = 0;
-  let totalBlanks = 0;
-  const results = []; // 每题的结果
-  const errorTenseCount = {}; // 本次答错的时态统计
+  let totalQuestions = currentQuiz.length;
+  const results = [];
+  const errorTenseCount = {};
 
   currentQuiz.forEach((q, i) => {
     const item = document.getElementById(`quiz-item-${i}`);
     const feedbackDiv = document.getElementById(`feedback-${i}`);
-    const answers = q.answers;
-    const blankCount = answers.length;
-    totalBlanks += blankCount;
+    const input = document.getElementById(`quiz-input-${i}-0`);
+    const userAns = input ? input.value : '';
+    if (input) input.disabled = true;
 
-    let allCorrect = true;
-    let userAnswers = [];
-    let correctAnswers = [];
+    const isCorrect = checkAnswer(userAns, q.answer);
 
-    for (let j = 0; j < blankCount; j++) {
-      const input = document.getElementById(`quiz-input-${i}-${j}`);
-      if (!input) continue;
-      input.disabled = true;
-      const userAns = input.value;
-      userAnswers.push(userAns);
-      correctAnswers.push(answers[j]);
-      if (!checkAnswer(userAns, answers[j])) {
-        allCorrect = false;
-      }
-    }
-
-    if (allCorrect) {
-      correctCount += blankCount;
+    if (isCorrect) {
+      correctCount++;
       item.classList.add('correct');
       item.classList.remove('wrong');
     } else {
-      // 部分正确也算该题错误
       item.classList.add('wrong');
       item.classList.remove('correct');
-      // 统计错题时态
       if (!errorTenseCount[q.tense]) errorTenseCount[q.tense] = 0;
       errorTenseCount[q.tense]++;
     }
 
-    // 生成反馈
     let feedbackHtml = '';
-    for (let j = 0; j < blankCount; j++) {
-      const isCorrect = checkAnswer(userAnswers[j], answers[j]);
-      if (isCorrect) {
-        feedbackHtml += `<div>✅ 第${j+1}空：<span class="correct-ans">${escapeHtml(answers[j])}</span> ✓</div>`;
-      } else {
-        feedbackHtml += `<div>❌ 第${j+1}空：你的答案 <span class="your-answer">"${escapeHtml(userAnswers[j] || '（未填）')}"</span> → 正确答案 <span class="correct-ans">${escapeHtml(answers[j])}</span></div>`;
-      }
+    if (isCorrect) {
+      feedbackHtml += `<div>✅ 正确答案：<span class="correct-ans">${escapeHtml(q.answer)}</span> ✓</div>`;
+    } else {
+      feedbackHtml += `<div>❌ 你的答案 <span class="your-answer">"${escapeHtml(userAns || '（未填）')}"</span> → 正确答案 <span class="correct-ans">${escapeHtml(q.answer)}</span></div>`;
     }
     feedbackHtml += `<div class="explanation">💡 涉及时态：<span class="tense-tag" onclick="showTenseModal('${escapeHtml(q.tense)}')">${escapeHtml(q.tense)}</span></div>`;
 
@@ -929,42 +965,38 @@ function submitQuiz() {
 
     results.push({
       sentence: q.sentence,
-      answers: answers,
-      userAnswers: userAnswers,
-      allCorrect: allCorrect,
+      answer: q.answer,
+      userAnswer: userAns,
+      isCorrect: isCorrect,
       tense: q.tense,
-      difficulty: q.difficulty
+      difficulty: q.difficulty,
+      translation: q.translation || ''
     });
   });
 
   quizSubmitted = true;
 
-  // 保存做题记录
   const data = getData();
-  const accuracy = totalBlanks > 0 ? Math.round((correctCount / totalBlanks) * 100) : 0;
+  const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
-  // 更新易错时态
   if (!data.errorTenses) data.errorTenses = {};
   for (const [tense, count] of Object.entries(errorTenseCount)) {
     data.errorTenses[tense] = (data.errorTenses[tense] || 0) + count;
   }
 
-  // 添加历史记录
   if (!data.history) data.history = [];
   data.history.push({
     date: new Date().toISOString(),
-    totalBlanks: totalBlanks,
+    totalQuestions: totalQuestions,
     correct: correctCount,
     accuracy: accuracy,
     results: results
   });
-  // 限制最多100条
   if (data.history.length > 100) data.history = data.history.slice(-100);
 
   saveData(data);
 
-  // 渲染结果
-  renderResults(accuracy, correctCount, totalBlanks, results);
+  renderResults(accuracy, correctCount, totalQuestions, results);
   renderHistory();
   renderErrorPoints();
 
@@ -977,29 +1009,22 @@ function submitQuiz() {
   document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
 }
 
-function renderResults(accuracy, correctCount, totalBlanks, results) {
+function renderResults(accuracy, correctCount, totalQuestions, results) {
   const resultArea = document.getElementById('result-area');
   resultArea.style.display = 'block';
 
   let emoji = accuracy >= 90 ? '🎉' : accuracy >= 70 ? '👍' : accuracy >= 50 ? '💪' : '📚';
   let comment = accuracy >= 90 ? '时态掌握非常扎实！' : accuracy >= 70 ? '整体不错，继续加油！' : accuracy >= 50 ? '还需要多练习哦！' : '建议系统复习时态知识！';
 
-  const correctItems = results.filter(r => r.allCorrect);
-  const wrongItems = results.filter(r => !r.allCorrect);
+  const correctItems = results.filter(r => r.isCorrect);
+  const wrongItems = results.filter(r => !r.isCorrect);
 
-  function buildReviewHtml(item, index) {
-    const cls = item.allCorrect ? 'correct-review' : 'wrong-review';
-    const icon = item.allCorrect ? '✅' : '❌';
-
-    let detailHtml = '';
-    for (let j = 0; j < item.answers.length; j++) {
-      const isOk = checkAnswer(item.userAnswers[j] || '', item.answers[j]);
-      if (isOk) {
-        detailHtml += `<div>· 第${j+1}空：<span style="color:#00b894;">${escapeHtml(item.answers[j])}</span> ✓</div>`;
-      } else {
-        detailHtml += `<div>· 第${j+1}空：<span class="rev-user">${escapeHtml(item.userAnswers[j] || '（未填）')}</span> → <span style="color:#00b894;">${escapeHtml(item.answers[j])}</span></div>`;
-      }
-    }
+  function buildReviewHtml(item) {
+    const cls = item.isCorrect ? 'correct-review' : 'wrong-review';
+    const icon = item.isCorrect ? '✅' : '❌';
+    let detailHtml = item.isCorrect
+      ? `<div>· <span style="color:#00b894;">${escapeHtml(item.answer)}</span> ✓</div>`
+      : `<div>· <span class="rev-user">${escapeHtml(item.userAnswer || '（未填）')}</span> → <span style="color:#00b894;">${escapeHtml(item.answer)}</span></div>`;
 
     return `
       <div class="review-item ${cls}">
@@ -1018,7 +1043,7 @@ function renderResults(accuracy, correctCount, totalBlanks, results) {
       <div class="card-title"><span class="icon">📊</span>测验结果</div>
       <div class="result-summary">
         <div class="result-score">${accuracy}%</div>
-        <div class="result-detail">${emoji} ${comment} — ${correctCount}/${totalBlanks} 个空正确</div>
+        <div class="result-detail">${emoji} ${comment} — ${correctCount}/${totalQuestions} 题正确</div>
         <div class="result-bar">
           <div class="result-bar-fill" style="width:${accuracy}%"></div>
         </div>
@@ -1027,14 +1052,14 @@ function renderResults(accuracy, correctCount, totalBlanks, results) {
       ${wrongItems.length > 0 ? `
         <div class="review-list">
           <div class="card-title" style="font-size:15px; color:#e17055;">❌ 需要复习的题目（${wrongItems.length}题）</div>
-          ${wrongItems.map((item, idx) => buildReviewHtml(item, idx)).join('')}
+          ${wrongItems.map(item => buildReviewHtml(item)).join('')}
         </div>
       ` : ''}
 
       ${correctItems.length > 0 ? `
         <div class="review-list">
           <div class="card-title" style="font-size:15px; color:#00b894;">✅ 答对的题目（${correctItems.length}题）</div>
-          ${correctItems.map((item, idx) => buildReviewHtml(item, idx)).join('')}
+          ${correctItems.map(item => buildReviewHtml(item)).join('')}
         </div>
       ` : ''}
     </div>
@@ -1056,11 +1081,12 @@ function renderHistory() {
     let cls = r.accuracy >= 80 ? 'good' : r.accuracy >= 50 ? 'mid' : 'low';
     const dt = new Date(r.date);
     const dateStr = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+    const totalQ = r.totalQuestions || r.totalBlanks || 10;
     return `
       <div class="history-item" onclick="showHistoryDetail(${realIdx})">
         <div class="hi-date">${dateStr}</div>
         <div class="hi-score ${cls}">${r.accuracy}%</div>
-        <div class="hi-detail">${r.correct}/${r.totalBlanks} 空正确</div>
+        <div class="hi-detail">${r.correct}/${totalQ} 题正确</div>
       </div>
     `;
   }).join('');
@@ -1073,16 +1099,20 @@ function showHistoryDetail(index) {
 
   const box = document.getElementById('history-detail-box');
   const results = record.results || [];
+  const totalQ = record.totalQuestions || record.totalBlanks || 10;
 
-  let html = `<div style="font-weight:600;margin-bottom:8px;color:#e0e0e0;">📊 ${record.correct}/${record.totalBlanks} 空正确 · ${record.accuracy}%</div>`;
+  let html = `<div style="font-weight:600;margin-bottom:8px;color:#e0e0e0;">📊 ${record.correct}/${totalQ} 题正确 · ${record.accuracy}%</div>`;
   if (results.length === 0) {
     html += '<div style="color:#8899aa;">无详细信息</div>';
   } else {
     results.forEach((r, i) => {
-      const icon = r.allCorrect ? '✅' : '❌';
-      html += `<div style="margin-bottom:6px;padding:6px;border-radius:6px;background:${r.allCorrect ? 'rgba(0,184,148,0.06)' : 'rgba(225,112,85,0.06)'};">
+      const icon = r.isCorrect !== undefined ? (r.isCorrect ? '✅' : '❌') : (r.allCorrect ? '✅' : '❌');
+      const answer = r.answer || (r.answers ? r.answers.join(', ') : '');
+      const userAnswer = r.userAnswer || (r.userAnswers ? r.userAnswers.join(', ') : '');
+      html += `<div style="margin-bottom:6px;padding:6px;border-radius:6px;background:${icon === '✅' ? 'rgba(0,184,148,0.06)' : 'rgba(225,112,85,0.06)'};">
         ${icon} ${escapeHtml(r.sentence)}<br>
-        <span style="font-size:12px;color:#5a6a7a;">答案：${r.answers.join(', ')}</span>
+        <span style="font-size:12px;color:#5a6a7a;">答案：${escapeHtml(answer)}</span>
+        ${icon === '❌' ? `<span style="font-size:12px;color:#e17055;"> · 你的：${escapeHtml(userAnswer || '（未填）')}</span>` : ''}
         <span class="hd-tense" onclick="showTenseModal('${escapeHtml(r.tense)}')">📖 ${escapeHtml(r.tense)}</span>
       </div>`;
     });
@@ -1091,7 +1121,6 @@ function showHistoryDetail(index) {
   box.innerHTML = html;
   box.style.display = 'block';
 
-  // 添加关闭按钮
   if (!box.querySelector('.close-detail-btn')) {
     const closeBtn = document.createElement('button');
     closeBtn.className = 'btn btn-outline btn-xs close-detail-btn';
