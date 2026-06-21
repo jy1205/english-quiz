@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英语动词时态表达练习</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  padding: 16px;
+  color: #e0e0e0;
+}
+
+.header {
+  text-align: center;
+  padding: 28px 0 16px;
+}
+.header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+}
+.header p {
+  font-size: 14px;
+  color: #8899aa;
+  margin-top: 6px;
+}
+
+/* 布局 */
+.app-layout {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.main-col { flex: 1; min-width: 0; }
+.side-col { width: 300px; flex-shrink: 0; }
+
+/* 卡片 */
+.card {
+  background: #1e2a3a;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  border: 1px solid #2a3a4a;
+}
+.card-title {
+  font-size: 18px; font-weight: 700; color: #e0e0e0;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.card-title .icon { font-size: 22px; }
+
+/* 按钮 */
+.btn {
+  padding: 10px 20px; border: none; border-radius: 10px; font-size: 14px;
+  font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  color: #1a1a2e;
+  box-shadow: 0 4px 12px rgba(247,151,30,0.4);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(247,151,30,0.5); }
+.btn-primary:disabled { background: #3a4a5a; color: #8899aa; box-shadow: none; cursor: not-allowed; transform: none; }
+.btn-success {
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,184,148,0.4);
+}
+.btn-success:hover { transform: translateY(-1px); }
+.btn-outline {
+  background: transparent; color: #f7971e; border: 2px solid #f7971e;
+}
+.btn-outline:hover { background: rgba(247,151,30,0.1); }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+.btn-xs { padding: 3px 8px; font-size: 11px; border-radius: 4px; }
+
+/* 测验信息条 */
+.quiz-info-bar {
+  display: flex; gap: 12px; align-items: center; margin-bottom: 16px;
+  padding: 10px 14px; background: #162030; border-radius: 10px;
+  font-size: 13px; color: #8899aa; flex-wrap: wrap;
+}
+.quiz-info-bar strong { color: #ffd200; }
+
+/* 题目卡片 */
+.quiz-item {
+  background: #162030;
+  border: 2px solid #2a3a4a;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 14px;
+  transition: all 0.3s;
+  position: relative;
+}
+.quiz-item.correct { border-color: #00b894; background: rgba(0,184,148,0.06); }
+.quiz-item.wrong { border-color: #e17055; background: rgba(225,112,85,0.06); }
+.quiz-item .q-num {
+  font-size: 12px; color: #5a6a7a; margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.quiz-item .q-difficulty {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  font-weight: 600;
+}
+.diff-easy { background: rgba(0,184,148,0.2); color: #00b894; }
+.diff-medium { background: rgba(253,203,110,0.2); color: #fdcb6e; }
+.diff-hard { background: rgba(225,112,85,0.2); color: #e17055; }
+
+.quiz-item .q-sentence {
+  font-size: 16px; line-height: 1.9; color: #c8d6e5;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+.quiz-item .q-blank {
+  display: inline-block;
+  min-width: 140px;
+  border-bottom: 2px dashed #f7971e;
+  margin: 0 4px;
+  vertical-align: bottom;
+}
+.quiz-item .q-input {
+  width: 100%; padding: 10px 14px;
+  border: 2px solid #2a3a4a; border-radius: 8px;
+  background: #1a2a3a; color: #e0e0e0;
+  font-size: 15px; outline: none; transition: border-color 0.2s;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+.quiz-item .q-input:focus { border-color: #f7971e; }
+.quiz-item .q-input:disabled { opacity: 0.6; }
+.quiz-item .q-input::placeholder { color: #5a6a7a; }
+
+.quiz-item .q-feedback {
+  margin-top: 10px; padding: 10px 14px;
+  border-radius: 8px; font-size: 13px; line-height: 1.7;
+  display: none;
+}
+.quiz-item.correct .q-feedback,
+.quiz-item.wrong .q-feedback { display: block; }
+.quiz-item.correct .q-feedback { background: rgba(0,184,148,0.1); color: #55efc4; }
+.quiz-item.wrong .q-feedback { background: rgba(225,112,85,0.1); color: #fab1a0; }
+
+.quiz-item .q-feedback .your-answer { color: #e17055; }
+.quiz-item .q-feedback .correct-ans { color: #00b894; font-weight: 700; }
+.quiz-item .q-feedback .explanation { color: #b2bec3; margin-top: 4px; }
+.quiz-item .q-feedback .tense-tag {
+  display: inline-block;
+  background: rgba(247,151,30,0.2);
+  color: #f7971e;
+  padding: 2px 10px; border-radius: 10px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  margin: 0 2px;
+  transition: all 0.2s;
+}
+.quiz-item .q-feedback .tense-tag:hover {
+  background: rgba(247,151,30,0.4);
+  transform: scale(1.05);
+}
+
+/* 结果区域 */
+.result-summary {
+  text-align: center; padding: 20px 0;
+}
+.result-score {
+  font-size: 56px; font-weight: 800;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.result-detail { font-size: 14px; color: #8899aa; margin-top: 4px; }
+.result-bar {
+  height: 8px; background: #2a3a4a; border-radius: 4px;
+  margin: 14px 0; overflow: hidden;
+}
+.result-bar-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  border-radius: 4px; transition: width 0.5s ease;
+}
+
+/* 回顾列表 */
+.review-list { margin-top: 16px; }
+.review-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px; border-radius: 8px; margin-bottom: 8px;
+  background: #162030; border: 1px solid #2a3a4a;
+  font-size: 13px; line-height: 1.6;
+}
+.review-item.correct-review { border-left: 4px solid #00b894; }
+.review-item.wrong-review { border-left: 4px solid #e17055; }
+.review-item .rev-num {
+  font-size: 18px; font-weight: 700; min-width: 30px;
+  text-align: center;
+}
+.review-item.correct-review .rev-num { color: #00b894; }
+.review-item.wrong-review .rev-num { color: #e17055; }
+.review-item .rev-content { flex: 1; }
+.review-item .rev-sentence { color: #c8d6e5; font-size: 14px; margin-bottom: 4px; }
+.review-item .rev-answer { color: #00b894; font-weight: 600; }
+.review-item .rev-user { color: #e17055; text-decoration: line-through; }
+.review-item .rev-tense {
+  display: inline-block; color: #f7971e; cursor: pointer;
+  border-bottom: 1px dashed #f7971e; font-size: 12px;
+  margin-top: 4px;
+}
+.review-item .rev-tense:hover { color: #ffd200; }
+
+/* 时态讲解弹窗 */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: #1e2a3a; border-radius: 16px;
+  padding: 28px; max-width: 640px; width: 90%;
+  max-height: 80vh; overflow-y: auto;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  border: 1px solid #2a3a4a;
+  position: relative;
+}
+.modal-box h3 {
+  font-size: 20px; color: #ffd200; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-box .close-btn {
+  position: absolute; top: 16px; right: 20px;
+  background: none; border: none; color: #8899aa;
+  font-size: 24px; cursor: pointer;
+  transition: color 0.2s;
+}
+.modal-box .close-btn:hover { color: #e17055; }
+.modal-box .tense-content {
+  color: #b2bec3; line-height: 1.9; font-size: 14px;
+}
+.modal-box .tense-content h4 {
+  color: #dfe6e9; margin: 16px 0 8px; font-size: 16px;
+}
+.modal-box .tense-content .highlight {
+  color: #f7971e; font-weight: 600;
+}
+.modal-box .tense-content .formula {
+  display: block; padding: 10px 14px; margin: 8px 0;
+  background: #162030; border-radius: 8px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  color: #55efc4; font-size: 15px;
+  border-left: 3px solid #f7971e;
+}
+.modal-box .tense-content .example {
+  display: block; padding: 6px 12px; margin: 4px 0;
+  background: rgba(0,184,148,0.08); border-radius: 6px;
+  color: #55efc4; font-size: 13px;
+}
+.modal-box .tense-content .key-point {
+  color: #ffd200; font-weight: 600;
+}
+.modal-box .tense-content ul {
+  margin: 8px 0 8px 20px;
+}
+.modal-box .tense-content li {
+  margin-bottom: 4px;
+}
+
+/* 历史记录面板 */
+.history-panel .card-title { margin-bottom: 8px; }
+.history-list { max-height: 360px; overflow-y: auto; }
+.history-item {
+  padding: 10px 12px; border-radius: 8px; margin-bottom: 6px;
+  background: #162030; border: 1px solid #2a3a4a;
+  cursor: pointer; transition: background 0.2s;
+}
+.history-item:hover { background: #1e3040; }
+.history-item .hi-date { font-size: 12px; color: #5a6a7a; }
+.history-item .hi-score { font-size: 16px; font-weight: 700; margin: 2px 0; }
+.history-item .hi-score.good { color: #00b894; }
+.history-item .hi-score.mid { color: #fdcb6e; }
+.history-item .hi-score.low { color: #e17055; }
+.history-item .hi-detail { font-size: 12px; color: #8899aa; }
+
+.history-detail-box {
+  margin-top: 12px; padding: 12px; background: #162030;
+  border-radius: 8px; border: 1px solid #2a3a4a; display: none;
+  font-size: 13px; color: #b2bec3; line-height: 1.8;
+}
+.history-detail-box .hd-tense { color: #f7971e; cursor: pointer; border-bottom: 1px dashed #f7971e; }
+.history-detail-box .hd-tense:hover { color: #ffd200; }
+
+.history-empty { text-align: center; padding: 24px; color: #5a6a7a; font-size: 13px; }
+
+/* 易错点面板 */
+.error-points { margin-top: 8px; }
+.error-point-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 10px; border-radius: 6px; margin-bottom: 4px;
+  background: rgba(225,112,85,0.08); border: 1px solid rgba(225,112,85,0.15);
+  font-size: 13px;
+}
+.error-point-item .ep-tense { color: #f7971e; cursor: pointer; border-bottom: 1px dashed #f7971e; }
+.error-point-item .ep-tense:hover { color: #ffd200; }
+.error-point-item .ep-count { color: #e17055; font-weight: 700; }
+
+/* Toast */
+.toast {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background: #333; color: #fff; padding: 10px 24px; border-radius: 20px;
+  font-size: 14px; z-index: 1000; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .app-layout { flex-direction: column; }
+  .side-col { width: 100%; }
+  .history-list { max-height: 200px; }
+  .quiz-item .q-sentence { font-size: 15px; }
+}
+@media (max-width: 480px) {
+  .header h1 { font-size: 22px; }
+  .card { padding: 16px; }
+  .quiz-info-bar { flex-direction: column; align-items: flex-start; }
+  .modal-box { padding: 20px; max-width: 95%; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⏳ 英语动词时态表达练习</h1>
+  <p>9种核心时态 · 随机出题 · 自动批改 · 时态讲解 · 易错追踪</p>
+</div>
+
+<div class="app-layout">
+  <!-- 左侧主区域 -->
+  <div class="main-col">
+    <div class="card">
+      <!-- 测验信息 -->
+      <div class="quiz-info-bar" id="quiz-info-bar">
+        <span>📝 <strong>每次 10 题</strong></span>
+        <span>🎯 <strong>涵盖 9 种时态</strong></span>
+        <span>📊 难度随机分布</span>
+      </div>
+
+      <!-- 题目区域 -->
+      <div id="quiz-area">
+        <div style="text-align:center;padding:40px 20px;color:#5a6a7a;">
+          <div style="font-size:48px;margin-bottom:12px;">⏰</div>
+          <p>点击下方按钮开始时态练习</p>
+        </div>
+      </div>
+
+      <!-- 按钮区 -->
+      <div id="quiz-actions" style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="startQuiz()">🔄 随机出题（10道）</button>
+        <button class="btn btn-success" onclick="submitQuiz()" id="btn-submit" disabled>✅ 提交检测</button>
+      </div>
+
+      <!-- 结果区域 -->
+      <div id="result-area" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- 右侧面板 -->
+  <div class="side-col">
+    <!-- 做题记录 -->
+    <div class="card history-panel">
+      <div class="card-title"><span class="icon">📋</span>做题记录</div>
+      <div class="history-list" id="history-list">
+        <div class="history-empty">暂无做题记录</div>
+      </div>
+      <div class="history-detail-box" id="history-detail-box"></div>
+    </div>
+
+    <!-- 易错时态 -->
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title"><span class="icon">⚠️</span>易错时态</div>
+      <div class="error-points" id="error-points">
+        <div class="history-empty">暂无数据</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 时态讲解弹窗 -->
+<div class="modal-overlay" id="tense-modal">
+  <div class="modal-box" id="tense-modal-content">
+    <button class="close-btn" onclick="closeTenseModal()">✕</button>
+    <div id="modal-inner"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== 时态讲解数据库 ====================
+const TENSE_LESSONS = {
+  '一般现在时': {
+    title: '一般现在时 (Simple Present)',
+    usage: '表示经常性、习惯性的动作或状态；客观事实、普遍真理；按时间表即将发生的事。',
+    structure: '主语 + 动词原形/第三人称单数(-s/-es) + ...',
+    formula: 'I/You/We/They + do\nHe/She/It + does (动词+s/es)',
+    negative: 'don\'t + 动词原形 / doesn\'t + 动词原形',
+    question: 'Do/Does + 主语 + 动词原形...?',
+    keywords: 'always, usually, often, sometimes, every day, on Sundays, never, rarely',
+    examples: [
+      'The sun rises in the east.（太阳从东边升起）',
+      'She goes to school by bus every day.（她每天乘公交上学）',
+      'Water boils at 100°C.（水在100°C沸腾）',
+      'The train leaves at 8 p.m.（火车晚上8点出发）'
+    ],
+    keyPoints: [
+      '第三人称单数（he/she/it）动词要加 -s 或 -es',
+      '表示客观真理时，无论主句什么时态，从句用一般现在时',
+      '时间/条件状语从句中，用一般现在时代替一般将来时（主将从现）'
+    ]
+  },
+  '一般过去时': {
+    title: '一般过去时 (Simple Past)',
+    usage: '表示过去某个时间发生的动作或存在的状态；过去经常性、习惯性的动作。',
+    structure: '主语 + 动词过去式 + ...',
+    formula: '规则动词：动词 + ed/d\n不规则动词需单独记忆',
+    negative: 'didn\'t + 动词原形',
+    question: 'Did + 主语 + 动词原形...?',
+    keywords: 'yesterday, last week, ago, in 2010, just now, the other day, once upon a time',
+    examples: [
+      'I visited my grandparents last weekend.（我上周末看望了祖父母）',
+      'She didn\'t go to school yesterday because she was ill.（她昨天没上学因为生病了）',
+      'He wrote a letter to his friend two days ago.（他两天前给朋友写了信）',
+      'When I was young, I often played in the park.（我小时候常在公园玩）'
+    ],
+    keyPoints: [
+      '动词过去式分规则和不规则变化，不规则动词需牢记',
+      '否定和疑问句中，助动词用 did，动词要还原为原形',
+      'used to + 动词原形 表示"过去常常做而现在不做了"'
+    ]
+  },
+  '一般将来时': {
+    title: '一般将来时 (Simple Future)',
+    usage: '表示将来某个时间要发生的动作或存在的状态；表示打算、计划做某事。',
+    structure: '主语 + will/shall + 动词原形 或 主语 + be going to + 动词原形',
+    formula: 'will + 动词原形\nbe going to + 动词原形',
+    negative: 'won\'t + 动词原形 / be not going to + 动词原形',
+    question: 'Will + 主语 + 动词原形...? / Be + 主语 + going to + 动词原形...?',
+    keywords: 'tomorrow, next week, in the future, soon, in 2030, later, this evening',
+    examples: [
+      'I will call you when I arrive.（我到了会给你打电话）',
+      'Look at those clouds! It is going to rain.（看那些云！要下雨了）',
+      'She is going to study abroad next year.（她明年要去国外留学）',
+      'Will you join us for dinner tonight?（你今晚和我们一起吃晚饭吗？）'
+    ],
+    keyPoints: [
+      'will 多表示临时决定或客观将来；be going to 多表示计划或根据迹象推测',
+      '时间/条件状语从句中用一般现在时代替一般将来时（主将从现）',
+      '现在进行时也可表将来（如 I\'m leaving tomorrow）'
+    ]
+  },
+  '现在进行时': {
+    title: '现在进行时 (Present Continuous)',
+    usage: '表示现在正在进行的动作；现阶段持续的动作；按计划即将发生的事。',
+    structure: '主语 + am/is/are + 动词-ing + ...',
+    formula: 'I + am + V-ing\nHe/She/It + is + V-ing\nYou/We/They + are + V-ing',
+    negative: 'am not / isn\'t / aren\'t + V-ing',
+    question: 'Am/Is/Are + 主语 + V-ing...?',
+    keywords: 'now, right now, at the moment, Look!, Listen!, these days, currently',
+    examples: [
+      'Tom is cleaning his room now.（Tom正在打扫房间）',
+      'Listen! The birds are singing in the tree.（听！鸟儿在树上唱歌）',
+      'She is studying for the exam these days.（她这几天在准备考试）',
+      'We are leaving for Beijing tomorrow.（我们明天要去北京）'
+    ],
+    keyPoints: [
+      '注意动词-ing形式的变化规则：去e加ing、双写末尾辅音加ing等',
+      '表示状态、感觉的动词（like, know, want, believe等）通常不用进行时',
+      '现在进行时可表示按计划即将发生的事（go, come, leave, arrive等）'
+    ]
+  },
+  '现在完成时': {
+    title: '现在完成时 (Present Perfect)',
+    usage: '表示过去发生的动作对现在造成的影响或结果；从过去持续到现在的动作或状态。',
+    structure: '主语 + have/has + 过去分词 + ...',
+    formula: 'I/You/We/They + have + done\nHe/She/It + has + done',
+    negative: 'haven\'t / hasn\'t + 过去分词',
+    question: 'Have/Has + 主语 + 过去分词...?',
+    keywords: 'already, yet, just, ever, never, since, for, so far, recently, in the past few years',
+    examples: [
+      'I have already finished my homework.（我已经完成作业了）',
+      'She has lived here since 2015.（她从2015年起就住在这里）',
+      'Have you ever been to the Great Wall?（你去过长城吗？）',
+      'He hasn\'t come back yet.（他还没回来）'
+    ],
+    keyPoints: [
+      'since + 时间点；for + 时间段',
+      'have been to（去过已回）vs have gone to（去了还没回）',
+      '过去分词分规则和不规则变化，不规则动词需牢记',
+      '与一般过去时的区别：现在完成时强调对现在的影响，一般过去时只陈述过去事实'
+    ]
+  },
+  '过去完成时': {
+    title: '过去完成时 (Past Perfect)',
+    usage: '表示在过去某一时间或动作之前已经发生或完成的动作（即"过去的过去"）。',
+    structure: '主语 + had + 过去分词 + ...',
+    formula: 'had + 过去分词 (done)',
+    negative: 'hadn\'t + 过去分词',
+    question: 'Had + 主语 + 过去分词...?',
+    keywords: 'by the time, before, after, when (从句用过去时), already, just, never',
+    examples: [
+      'By the time I arrived, the movie had already started.（我到的时候电影已经开始了）',
+      'She had finished her work before she went home.（她回家前已经完成了工作）',
+      'He said he had never seen such a beautiful sunset.（他说他从没见过这么美的日落）',
+      'I realized I had left my keys at home.（我意识到我把钥匙忘在家了）'
+    ],
+    keyPoints: [
+      '表示"过去的过去"，必须有一个过去时间作为参照',
+      '常用于宾语从句中，主句动词为过去时，从句动作先于主句',
+      'by the time + 过去时间，主句常用过去完成时'
+    ]
+  },
+  '过去进行时': {
+    title: '过去进行时 (Past Continuous)',
+    usage: '表示过去某一时刻或某段时间正在进行的动作；用于描述故事背景。',
+    structure: '主语 + was/were + 动词-ing + ...',
+    formula: 'I/He/She/It + was + V-ing\nYou/We/They + were + V-ing',
+    negative: 'wasn\'t / weren\'t + V-ing',
+    question: 'Was/Were + 主语 + V-ing...?',
+    keywords: 'at that time, at 8 o\'clock yesterday, when (从句用一般过去时), while',
+    examples: [
+      'I was doing my homework at 8 p.m. yesterday.（昨晚8点我在做作业）',
+      'While she was reading, the phone rang.（她正在看书时电话响了）',
+      'They were playing football when it began to rain.（他们踢足球时开始下雨了）',
+      'What were you doing at this time last night?（昨晚这个时间你在做什么？）'
+    ],
+    keyPoints: [
+      'when + 一般过去时（短暂动作）; while + 过去进行时（持续动作）',
+      '两个过去进行时可同时使用，表示两个动作同时持续进行',
+      '过去进行时常用于故事中描述背景场景'
+    ]
+  },
+  '将来进行时': {
+    title: '将来进行时 (Future Continuous)',
+    usage: '表示将来某一时刻或某段时间正在进行的动作；预计将要发生的动作。',
+    structure: '主语 + will be + 动词-ing + ...',
+    formula: 'will be + V-ing',
+    negative: 'won\'t be + V-ing',
+    question: 'Will + 主语 + be + V-ing...?',
+    keywords: 'at this time tomorrow, at 8 a.m. next Monday, this time next week, then',
+    examples: [
+      'I will be taking a test at 9 a.m. tomorrow.（明天上午9点我将在考试）',
+      'This time next week, we will be lying on the beach.（下周此时我们将躺在沙滩上）',
+      'Will you be using your car this afternoon?（今天下午你会用车吗？）',
+      'Don\'t call me at 8 p.m. I will be having dinner then.（晚上8点别打电话，我在吃饭）'
+    ],
+    keyPoints: [
+      '强调将来某个具体时间点正在进行的动作',
+      '也可用于委婉询问对方计划（比will you更礼貌）',
+      '结构简单：will be + V-ing，不需要考虑人称变化'
+    ]
+  },
+  '现在完成进行时': {
+    title: '现在完成进行时 (Present Perfect Continuous)',
+    usage: '表示从过去开始一直持续到现在的动作，强调动作的持续性和未完成性；动作刚刚结束但对现在有影响。',
+    structure: '主语 + have/has been + 动词-ing + ...',
+    formula: 'I/You/We/They + have been + V-ing\nHe/She/It + has been + V-ing',
+    negative: 'haven\'t / hasn\'t been + V-ing',
+    question: 'Have/Has + 主语 + been + V-ing...?',
+    keywords: 'all day, for hours, since morning, recently, lately, how long',
+    examples: [
+      'I have been waiting for you for two hours.（我已经等了你两个小时了）',
+      'She is tired because she has been working all day.（她很累，因为她工作了一整天）',
+      'How long have you been learning English?（你学英语多久了？）',
+      'It has been raining since last night.（从昨晚起一直在下雨）'
+    ],
+    keyPoints: [
+      '强调动作持续到现在且可能继续进行',
+      '与现在完成时的区别：现在完成进行时更强调动作的持续性和未完成',
+      '常用于解释当前状况的原因（如疲惫、脏乱等）',
+      'for + 时间段 和 since + 时间点 是常见搭配'
+    ]
+  }
+};
+
+// ==================== 题库 ====================
+const QUESTION_BANK = [
+  // ===== 一般现在时 =====
+  { sentence: "The earth ______ (go) around the sun, and the moon ______ (move) around the earth.", answers: ["goes", "moves"], tense: "一般现在时", difficulty: "easy" },
+  { sentence: "My father ______ (not drink) coffee. He ______ (prefer) tea instead.", answers: ["doesn't drink", "prefers"], tense: "一般现在时", difficulty: "easy" },
+  { sentence: "Every morning, Sarah ______ (wake) up at six, ______ (brush) her teeth, and then ______ (go) for a run before breakfast.", answers: ["wakes", "brushes", "goes"], tense: "一般现在时", difficulty: "medium" },
+  { sentence: "If it ______ (rain) tomorrow, we ______ (cancel) the picnic. That's what the teacher told us yesterday.", answers: ["rains", "will cancel"], tense: "一般现在时", difficulty: "hard" },
+  { sentence: "The scientist explained that light ______ (travel) faster than sound, which ______ (be) a basic fact in physics.", answers: ["travels", "is"], tense: "一般现在时", difficulty: "hard" },
+
+  // ===== 一般过去时 =====
+  { sentence: "Yesterday, I ______ (see) an old friend in the street, but I ______ (not recognize) her at first.", answers: ["saw", "didn't recognize"], tense: "一般过去时", difficulty: "easy" },
+  { sentence: "Last summer, my family ______ (go) to Yunnan. We ______ (visit) many beautiful places and ______ (take) hundreds of photos.", answers: ["went", "visited", "took"], tense: "一般过去时", difficulty: "medium" },
+  { sentence: "When I ______ (be) a child, I often ______ (climb) the big tree in our garden and ______ (imagine) I was a brave explorer.", answers: ["was", "climbed", "imagined"], tense: "一般过去时", difficulty: "medium" },
+  { sentence: "The old man ______ (sit) down slowly, ______ (take) out a worn photo from his pocket, and ______ (begin) to tell a story that no one had heard before.", answers: ["sat", "took", "began"], tense: "一般过去时", difficulty: "hard" },
+  { sentence: "She ______ (buy) a new phone last month but ______ (lose) it on the bus just three days ago.", answers: ["bought", "lost"], tense: "一般过去时", difficulty: "medium" },
+
+  // ===== 一般将来时 =====
+  { sentence: "I promise I ______ (finish) the report by Friday, and I ______ (send) it to you as soon as possible.", answers: ["will finish", "will send"], tense: "一般将来时", difficulty: "easy" },
+  { sentence: "Look at the dark clouds! It ______ (rain) soon. We'd better ______ (take) an umbrella.", answers: ["is going to rain", "take"], tense: "一般将来时", difficulty: "medium" },
+  { sentence: "Scientists predict that robots ______ (do) most housework for humans in the near future, and people ______ (have) more free time.", answers: ["will do", "will have"], tense: "一般将来时", difficulty: "medium" },
+  { sentence: "The train ______ (leave) at 7:30 tomorrow morning, so we ______ (need) to get up very early.", answers: ["leaves", "will need"], tense: "一般将来时", difficulty: "hard" },
+  { sentence: "Next month, my cousin ______ (fly) to London to study, and she says she ______ (write) to us every week.", answers: ["will fly", "will write"], tense: "一般将来时", difficulty: "easy" },
+
+  // ===== 现在进行时 =====
+  { sentence: "Listen! Someone ______ (sing) in the next room. It ______ (sound) like a popular song.", answers: ["is singing", "sounds"], tense: "现在进行时", difficulty: "easy" },
+  { sentence: "Tom ______ (clean) his room now, and his sister ______ (help) him put away the books.", answers: ["is cleaning", "is helping"], tense: "现在进行时", difficulty: "easy" },
+  { sentence: "These days, the students ______ (prepare) for the final exam. They ______ (study) from morning till night.", answers: ["are preparing", "are studying"], tense: "现在进行时", difficulty: "medium" },
+  { sentence: "— Where is your brother? — He ______ (fix) his bike in the garage. He ______ (work) on it for almost an hour.", answers: ["is fixing", "has been working"], tense: "现在进行时", difficulty: "hard" },
+  { sentence: "The children ______ (not play) outside right now because it ______ (rain) heavily.", answers: ["aren't playing", "is raining"], tense: "现在进行时", difficulty: "medium" },
+
+  // ===== 现在完成时 =====
+  { sentence: "I ______ (already finish) my homework. Can I ______ (watch) TV now?", answers: ["have already finished", "watch"], tense: "现在完成时", difficulty: "easy" },
+  { sentence: "She ______ (live) in this city since she was born. She ______ (never move) to another place.", answers: ["has lived", "has never moved"], tense: "现在完成时", difficulty: "medium" },
+  { sentence: "— ______ you ever ______ (be) to Shanghai? — Yes, I ______ (go) there twice.", answers: ["Have", "been", "have been"], tense: "现在完成时", difficulty: "medium" },
+  { sentence: "Over the past ten years, technology ______ (change) our lives in ways we never ______ (imagine) before.", answers: ["has changed", "imagined"], tense: "现在完成时", difficulty: "hard" },
+  { sentence: "My friend ______ (not reply) to my message yet, though I ______ (send) it three hours ago.", answers: ["hasn't replied", "sent"], tense: "现在完成时", difficulty: "hard" },
+
+  // ===== 过去完成时 =====
+  { sentence: "By the time I got to the cinema, the movie ______ (already start). I ______ (miss) the first ten minutes.", answers: ["had already started", "missed"], tense: "过去完成时", difficulty: "medium" },
+  { sentence: "She realized she ______ (leave) her phone at the restaurant after she ______ (get) on the bus.", answers: ["had left", "got"], tense: "过去完成时", difficulty: "medium" },
+  { sentence: "Before he ______ (become) a famous writer, he ______ (work) as a waiter and ______ (live) in a tiny apartment for five years.", answers: ["became", "had worked", "had lived"], tense: "过去完成时", difficulty: "hard" },
+  { sentence: "The teacher asked us if we ______ (finish) reading the book, but most of us ______ (not start) it yet at that time.", answers: ["had finished", "hadn't started"], tense: "过去完成时", difficulty: "hard" },
+  { sentence: "I ______ (plan) to visit her, but she ______ (already leave) when I arrived at her house.", answers: ["had planned", "had already left"], tense: "过去完成时", difficulty: "medium" },
+
+  // ===== 过去进行时 =====
+  { sentence: "At 8 o'clock last night, I ______ (watch) a movie with my family. We ______ (have) a great time.", answers: ["was watching", "were having"], tense: "过去进行时", difficulty: "easy" },
+  { sentence: "While my mother ______ (cook) in the kitchen, my father ______ (read) the newspaper in the living room.", answers: ["was cooking", "was reading"], tense: "过去进行时", difficulty: "medium" },
+  { sentence: "I ______ (walk) home when suddenly a dog ______ (run) out and ______ (bark) at me loudly.", answers: ["was walking", "ran", "barked"], tense: "过去进行时", difficulty: "medium" },
+  { sentence: "The students ______ (talk) noisily when the teacher ______ (walk) into the classroom. Everyone ______ (stop) immediately.", answers: ["were talking", "walked", "stopped"], tense: "过去进行时", difficulty: "medium" },
+  { sentence: "At that moment, I ______ (not think) clearly because I ______ (feel) so nervous about the interview that was about to begin.", answers: ["wasn't thinking", "was feeling"], tense: "过去进行时", difficulty: "hard" },
+
+  // ===== 将来进行时 =====
+  { sentence: "This time tomorrow, I ______ (fly) to Beijing. I ______ (sit) on the plane and looking out at the clouds.", answers: ["will be flying", "will be sitting"], tense: "将来进行时", difficulty: "medium" },
+  { sentence: "At 9 a.m. next Monday, we ______ (take) the math exam. Please don't call me then.", answers: ["will be taking"], tense: "将来进行时", difficulty: "easy" },
+  { sentence: "— ______ you ______ (use) your computer this afternoon? I need to print something. — No, you can use it.", answers: ["Will", "be using"], tense: "将来进行时", difficulty: "medium" },
+  { sentence: "By this summer, she ______ (study) at university. Her whole family ______ (cheer) for her at the graduation ceremony.", answers: ["will be studying", "will be cheering"], tense: "将来进行时", difficulty: "hard" },
+  { sentence: "At this time next year, the construction workers ______ (build) a new bridge over the river, and the old one ______ (tear) down.", answers: ["will be building", "will be being torn"], tense: "将来进行时", difficulty: "hard" },
+
+  // ===== 现在完成进行时 =====
+  { sentence: "I am so tired because I ______ (work) in the garden all morning. My back ______ (hurt) now.", answers: ["have been working", "hurts"], tense: "现在完成进行时", difficulty: "medium" },
+  { sentence: "She ______ (study) English for six years, and her spoken English ______ (improve) a lot.", answers: ["has been studying", "has improved"], tense: "现在完成进行时", difficulty: "medium" },
+  { sentence: "How long ______ you ______ (wait) here? Your face looks red — you ______ (stand) in the sun for too long!", answers: ["have", "been waiting", "have been standing"], tense: "现在完成进行时", difficulty: "hard" },
+  { sentence: "The children's clothes are all dirty because they ______ (play) in the mud. Their mother ______ (not notice) yet.", answers: ["have been playing", "hasn't noticed"], tense: "现在完成进行时", difficulty: "hard" },
+  { sentence: "It ______ (rain) heavily since last night, and the river level ______ (rise) quickly. People ______ (worry) about flooding.", answers: ["has been raining", "has been rising", "are worrying"], tense: "现在完成进行时", difficulty: "hard" },
+
+  // ===== 混合时态（一个句子涉及多个时态） =====
+  { sentence: "While Tom ______ (do) his homework, his mother ______ (come) in and ______ (ask) him what he ______ (do).", answers: ["was doing", "came", "asked", "was doing"], tense: "过去进行时", difficulty: "hard" },
+  { sentence: "I ______ (not see) him for years, but I still ______ (remember) the day when we first ______ (meet) in the school library.", answers: ["haven't seen", "remember", "met"], tense: "现在完成时", difficulty: "hard" },
+  { sentence: "By the time she ______ (arrive) at the station, the train ______ (already leave). She ______ (have) to wait for the next one.", answers: ["arrived", "had already left", "had"], tense: "过去完成时", difficulty: "hard" },
+  { sentence: "He said that he ______ (finish) the work by the end of the week, but now it seems he ______ (not complete) it yet.", answers: ["would finish", "hasn't completed"], tense: "一般将来时", difficulty: "hard" },
+  { sentence: "Every time I ______ (visit) my grandparents, they always ______ (ask) me how I ______ (do) at school and what I ______ (want) to be in the future.", answers: ["visit", "ask", "am doing", "want"], tense: "一般现在时", difficulty: "hard" },
+];
+
+// ==================== 存储与状态 ====================
+const STORAGE_KEY = 'tense_quiz_data_v1';
+
+function getData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : { history: [], errorTenses: {} };
+  } catch(e) {
+    return { history: [], errorTenses: {} };
+  }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+let currentQuiz = null;       // 当前题目数组
+let quizSubmitted = false;    // 是否已提交
+
+// ==================== 工具函数 ====================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ==================== 时态弹窗 ====================
+function showTenseModal(tenseName) {
+  const lesson = TENSE_LESSONS[tenseName];
+  if (!lesson) return;
+
+  const modal = document.getElementById('tense-modal');
+  const inner = document.getElementById('modal-inner');
+
+  let examplesHtml = lesson.examples.map(e => `<span class="example">📌 ${escapeHtml(e)}</span>`).join('');
+  let keyPointsHtml = lesson.keyPoints.map(p => `<li>${escapeHtml(p)}</li>`).join('');
+
+  inner.innerHTML = `
+    <h3>📖 ${escapeHtml(lesson.title)}</h3>
+    <div class="tense-content">
+      <h4>🎯 用法</h4>
+      <p>${escapeHtml(lesson.usage)}</p>
+
+      <h4>📐 基本结构</h4>
+      <p>${escapeHtml(lesson.structure)}</p>
+      <span class="formula">${escapeHtml(lesson.formula)}</span>
+
+      <h4>❌ 否定形式</h4>
+      <p>${escapeHtml(lesson.negative)}</p>
+
+      <h4>❓ 疑问形式</h4>
+      <p>${escapeHtml(lesson.question)}</p>
+
+      <h4>🔑 关键词/信号词</h4>
+      <p>${escapeHtml(lesson.keywords)}</p>
+
+      <h4>📝 例句</h4>
+      ${examplesHtml}
+
+      <h4>⚠️ 重点提示</h4>
+      <ul>${keyPointsHtml}</ul>
+    </div>
+  `;
+
+  modal.classList.add('show');
+}
+
+function closeTenseModal() {
+  document.getElementById('tense-modal').classList.remove('show');
+}
+
+// 点击弹窗遮罩层关闭
+document.getElementById('tense-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeTenseModal();
+});
+
+// ESC 关闭弹窗
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeTenseModal();
+});
+
+// ==================== 出题逻辑 ====================
+function startQuiz() {
+  // 随机选取10道题
+  const shuffled = shuffle(QUESTION_BANK);
+  currentQuiz = shuffled.slice(0, 10);
+  quizSubmitted = false;
+
+  renderQuiz();
+  document.getElementById('result-area').style.display = 'none';
+  document.getElementById('btn-submit').disabled = false;
+  resetSubmitBtn();
+
+  window.scrollTo({ top: document.getElementById('quiz-area').offsetTop - 80, behavior: 'smooth' });
+}
+
+function renderQuiz() {
+  if (!currentQuiz) return;
+  const area = document.getElementById('quiz-area');
+
+  area.innerHTML = currentQuiz.map((q, i) => {
+    // 处理句子：将 ___(word) 替换为填空输入框
+    const blankRegex = /______\s*\(([^)]+)\)/g;
+    let blankIndex = 0;
+    const sentenceHtml = q.sentence.replace(blankRegex, (match, word) => {
+      const idx = blankIndex++;
+      return `<span class="q-blank">
+        <input type="text" class="q-input" id="quiz-input-${i}-${idx}"
+          placeholder="${escapeHtml(word)}" autocomplete="off"
+          style="width:${Math.max(140, word.length * 18)}px;display:inline-block;">
+      </span>`;
+    });
+
+    // 难度标签
+    let diffClass = 'diff-medium';
+    let diffLabel = '中等';
+    if (q.difficulty === 'easy') { diffClass = 'diff-easy'; diffLabel = '简单'; }
+    if (q.difficulty === 'hard') { diffClass = 'diff-hard'; diffLabel = '困难'; }
+
+    return `
+      <div class="quiz-item" id="quiz-item-${i}">
+        <div class="q-num">
+          <span>第 ${i + 1} 题 / 共 ${currentQuiz.length} 题</span>
+          <span class="q-difficulty ${diffClass}">${diffLabel}</span>
+        </div>
+        <div class="q-sentence">${sentenceHtml}</div>
+        <div class="q-feedback" id="feedback-${i}"></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function resetSubmitBtn() {
+  const btn = document.getElementById('btn-submit');
+  btn.textContent = '✅ 提交检测';
+  btn.style.background = 'linear-gradient(135deg, #00b894, #00cec9)';
+  btn.style.boxShadow = '0 4px 12px rgba(0,184,148,0.4)';
+}
+
+// ==================== 批改逻辑 ====================
+function normalizeAnswer(str) {
+  // 去除多余空格，统一为单个空格，转小写
+  return str.replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function checkAnswer(userAnswer, correctAnswer) {
+  const ua = normalizeAnswer(userAnswer);
+  const ca = normalizeAnswer(correctAnswer);
+
+  // 完全匹配
+  if (ua === ca) return true;
+
+  // 对于否定形式，支持多种写法
+  // don't = do not, doesn't = does not, won't = will not, haven't = have not, etc.
+  const expandContractions = (s) => {
+    return s
+      .replace(/\bdon't\b/g, 'do not')
+      .replace(/\bdoesn't\b/g, 'does not')
+      .replace(/\bwon't\b/g, 'will not')
+      .replace(/\bcan't\b/g, 'can not')
+      .replace(/\bhaven't\b/g, 'have not')
+      .replace(/\bhasn't\b/g, 'has not')
+      .replace(/\bhadn't\b/g, 'had not')
+      .replace(/\bisn't\b/g, 'is not')
+      .replace(/\baren't\b/g, 'are not')
+      .replace(/\bwasn't\b/g, 'was not')
+      .replace(/\bweren't\b/g, 'were not')
+      .replace(/\bwouldn't\b/g, 'would not')
+      .replace(/\bcouldn't\b/g, 'could not')
+      .replace(/\bshouldn't\b/g, 'should not')
+      .replace(/\bhaven't\b/g, 'have not');
+  };
+
+  const expandedUser = expandContractions(ua);
+  const expandedCorrect = expandContractions(ca);
+
+  if (expandedUser === expandedCorrect) return true;
+
+  return false;
+}
+
+function submitQuiz() {
+  if (!currentQuiz || quizSubmitted) return;
+
+  const btn = document.getElementById('btn-submit');
+  btn.textContent = '⏳ 批改中...';
+  btn.style.background = '#fdcb6e';
+  btn.style.color = '#1a1a2e';
+  btn.disabled = true;
+
+  let correctCount = 0;
+  let totalBlanks = 0;
+  const results = []; // 每题的结果
+  const errorTenseCount = {}; // 本次答错的时态统计
+
+  currentQuiz.forEach((q, i) => {
+    const item = document.getElementById(`quiz-item-${i}`);
+    const feedbackDiv = document.getElementById(`feedback-${i}`);
+    const answers = q.answers;
+    const blankCount = answers.length;
+    totalBlanks += blankCount;
+
+    let allCorrect = true;
+    let userAnswers = [];
+    let correctAnswers = [];
+
+    for (let j = 0; j < blankCount; j++) {
+      const input = document.getElementById(`quiz-input-${i}-${j}`);
+      if (!input) continue;
+      input.disabled = true;
+      const userAns = input.value;
+      userAnswers.push(userAns);
+      correctAnswers.push(answers[j]);
+      if (!checkAnswer(userAns, answers[j])) {
+        allCorrect = false;
+      }
+    }
+
+    if (allCorrect) {
+      correctCount += blankCount;
+      item.classList.add('correct');
+      item.classList.remove('wrong');
+    } else {
+      // 部分正确也算该题错误
+      item.classList.add('wrong');
+      item.classList.remove('correct');
+      // 统计错题时态
+      if (!errorTenseCount[q.tense]) errorTenseCount[q.tense] = 0;
+      errorTenseCount[q.tense]++;
+    }
+
+    // 生成反馈
+    let feedbackHtml = '';
+    for (let j = 0; j < blankCount; j++) {
+      const isCorrect = checkAnswer(userAnswers[j], answers[j]);
+      if (isCorrect) {
+        feedbackHtml += `<div>✅ 第${j+1}空：<span class="correct-ans">${escapeHtml(answers[j])}</span> ✓</div>`;
+      } else {
+        feedbackHtml += `<div>❌ 第${j+1}空：你的答案 <span class="your-answer">"${escapeHtml(userAnswers[j] || '（未填）')}"</span> → 正确答案 <span class="correct-ans">${escapeHtml(answers[j])}</span></div>`;
+      }
+    }
+    feedbackHtml += `<div class="explanation">💡 涉及时态：<span class="tense-tag" onclick="showTenseModal('${escapeHtml(q.tense)}')">${escapeHtml(q.tense)}</span></div>`;
+
+    feedbackDiv.innerHTML = feedbackHtml;
+
+    results.push({
+      sentence: q.sentence,
+      answers: answers,
+      userAnswers: userAnswers,
+      allCorrect: allCorrect,
+      tense: q.tense,
+      difficulty: q.difficulty
+    });
+  });
+
+  quizSubmitted = true;
+
+  // 保存做题记录
+  const data = getData();
+  const accuracy = totalBlanks > 0 ? Math.round((correctCount / totalBlanks) * 100) : 0;
+
+  // 更新易错时态
+  if (!data.errorTenses) data.errorTenses = {};
+  for (const [tense, count] of Object.entries(errorTenseCount)) {
+    data.errorTenses[tense] = (data.errorTenses[tense] || 0) + count;
+  }
+
+  // 添加历史记录
+  if (!data.history) data.history = [];
+  data.history.push({
+    date: new Date().toISOString(),
+    totalBlanks: totalBlanks,
+    correct: correctCount,
+    accuracy: accuracy,
+    results: results
+  });
+  // 限制最多100条
+  if (data.history.length > 100) data.history = data.history.slice(-100);
+
+  saveData(data);
+
+  // 渲染结果
+  renderResults(accuracy, correctCount, totalBlanks, results);
+  renderHistory();
+  renderErrorPoints();
+
+  btn.textContent = '✅ 已提交';
+  btn.style.background = '#3a4a5a';
+  btn.style.color = '#8899aa';
+  btn.style.boxShadow = 'none';
+  btn.disabled = false;
+
+  document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderResults(accuracy, correctCount, totalBlanks, results) {
+  const resultArea = document.getElementById('result-area');
+  resultArea.style.display = 'block';
+
+  let emoji = accuracy >= 90 ? '🎉' : accuracy >= 70 ? '👍' : accuracy >= 50 ? '💪' : '📚';
+  let comment = accuracy >= 90 ? '时态掌握非常扎实！' : accuracy >= 70 ? '整体不错，继续加油！' : accuracy >= 50 ? '还需要多练习哦！' : '建议系统复习时态知识！';
+
+  const correctItems = results.filter(r => r.allCorrect);
+  const wrongItems = results.filter(r => !r.allCorrect);
+
+  function buildReviewHtml(item, index) {
+    const cls = item.allCorrect ? 'correct-review' : 'wrong-review';
+    const icon = item.allCorrect ? '✅' : '❌';
+
+    let detailHtml = '';
+    for (let j = 0; j < item.answers.length; j++) {
+      const isOk = checkAnswer(item.userAnswers[j] || '', item.answers[j]);
+      if (isOk) {
+        detailHtml += `<div>· 第${j+1}空：<span style="color:#00b894;">${escapeHtml(item.answers[j])}</span> ✓</div>`;
+      } else {
+        detailHtml += `<div>· 第${j+1}空：<span class="rev-user">${escapeHtml(item.userAnswers[j] || '（未填）')}</span> → <span style="color:#00b894;">${escapeHtml(item.answers[j])}</span></div>`;
+      }
+    }
+
+    return `
+      <div class="review-item ${cls}">
+        <div class="rev-num">${icon}</div>
+        <div class="rev-content">
+          <div class="rev-sentence">${escapeHtml(item.sentence)}</div>
+          ${detailHtml}
+          <span class="rev-tense" onclick="showTenseModal('${escapeHtml(item.tense)}')">📖 ${escapeHtml(item.tense)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  resultArea.innerHTML = `
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title"><span class="icon">📊</span>测验结果</div>
+      <div class="result-summary">
+        <div class="result-score">${accuracy}%</div>
+        <div class="result-detail">${emoji} ${comment} — ${correctCount}/${totalBlanks} 个空正确</div>
+        <div class="result-bar">
+          <div class="result-bar-fill" style="width:${accuracy}%"></div>
+        </div>
+      </div>
+
+      ${wrongItems.length > 0 ? `
+        <div class="review-list">
+          <div class="card-title" style="font-size:15px; color:#e17055;">❌ 需要复习的题目（${wrongItems.length}题）</div>
+          ${wrongItems.map((item, idx) => buildReviewHtml(item, idx)).join('')}
+        </div>
+      ` : ''}
+
+      ${correctItems.length > 0 ? `
+        <div class="review-list">
+          <div class="card-title" style="font-size:15px; color:#00b894;">✅ 答对的题目（${correctItems.length}题）</div>
+          ${correctItems.map((item, idx) => buildReviewHtml(item, idx)).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+// ==================== 历史记录 ====================
+function renderHistory() {
+  const data = getData();
+  const list = document.getElementById('history-list');
+  if (!data.history || data.history.length === 0) {
+    list.innerHTML = '<div class="history-empty">暂无做题记录</div>';
+    return;
+  }
+
+  const records = [...data.history].reverse();
+  list.innerHTML = records.map((r, idx) => {
+    const realIdx = data.history.length - 1 - idx;
+    let cls = r.accuracy >= 80 ? 'good' : r.accuracy >= 50 ? 'mid' : 'low';
+    const dt = new Date(r.date);
+    const dateStr = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+    return `
+      <div class="history-item" onclick="showHistoryDetail(${realIdx})">
+        <div class="hi-date">${dateStr}</div>
+        <div class="hi-score ${cls}">${r.accuracy}%</div>
+        <div class="hi-detail">${r.correct}/${r.totalBlanks} 空正确</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showHistoryDetail(index) {
+  const data = getData();
+  const record = data.history[index];
+  if (!record) return;
+
+  const box = document.getElementById('history-detail-box');
+  const results = record.results || [];
+
+  let html = `<div style="font-weight:600;margin-bottom:8px;color:#e0e0e0;">📊 ${record.correct}/${record.totalBlanks} 空正确 · ${record.accuracy}%</div>`;
+  if (results.length === 0) {
+    html += '<div style="color:#8899aa;">无详细信息</div>';
+  } else {
+    results.forEach((r, i) => {
+      const icon = r.allCorrect ? '✅' : '❌';
+      html += `<div style="margin-bottom:6px;padding:6px;border-radius:6px;background:${r.allCorrect ? 'rgba(0,184,148,0.06)' : 'rgba(225,112,85,0.06)'};">
+        ${icon} ${escapeHtml(r.sentence)}<br>
+        <span style="font-size:12px;color:#5a6a7a;">答案：${r.answers.join(', ')}</span>
+        <span class="hd-tense" onclick="showTenseModal('${escapeHtml(r.tense)}')">📖 ${escapeHtml(r.tense)}</span>
+      </div>`;
+    });
+  }
+
+  box.innerHTML = html;
+  box.style.display = 'block';
+
+  // 添加关闭按钮
+  if (!box.querySelector('.close-detail-btn')) {
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'btn btn-outline btn-xs close-detail-btn';
+    closeBtn.textContent = '关闭';
+    closeBtn.style.marginTop = '8px';
+    closeBtn.onclick = () => box.style.display = 'none';
+    box.appendChild(closeBtn);
+  }
+}
+
+// ==================== 易错时态 ====================
+function renderErrorPoints() {
+  const data = getData();
+  const container = document.getElementById('error-points');
+  const errorTenses = data.errorTenses || {};
+
+  const entries = Object.entries(errorTenses).sort((a, b) => b[1] - a[1]);
+
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="history-empty">暂无数据，做题后自动统计</div>';
+    return;
+  }
+
+  container.innerHTML = entries.map(([tense, count]) => `
+    <div class="error-point-item">
+      <span class="ep-tense" onclick="showTenseModal('${escapeHtml(tense)}')">📖 ${escapeHtml(tense)}</span>
+      <span class="ep-count">错 ${count} 次</span>
+    </div>
+  `).join('');
+}
+
+// ==================== 初始化 ====================
+function init() {
+  renderHistory();
+  renderErrorPoints();
+  document.getElementById('btn-submit').disabled = true;
+}
+
+// 键盘快捷键
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'Enter' && currentQuiz && !quizSubmitted) {
+    e.preventDefault();
+    submitQuiz();
+  }
+});
+
+init();
+</script>
+
+</body>
+</html>
