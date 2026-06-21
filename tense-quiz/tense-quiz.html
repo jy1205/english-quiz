@@ -189,6 +189,17 @@ body {
   transform: scale(1.05);
 }
 
+/* 错题分析 */
+.q-analysis {
+  margin-top: 10px; padding: 10px 14px;
+  background: #fef9e7; border-radius: 8px;
+  border-left: 3px solid #e67e22;
+  font-size: 13px; color: #7d6608; line-height: 1.7;
+  display: none;
+}
+.quiz-item.wrong .q-analysis { display: block; }
+
+
 /* 结果区域 */
 .result-summary {
   text-align: center; padding: 20px 0;
@@ -915,6 +926,172 @@ function checkAnswer(userAnswer, correctAnswer) {
   return false;
 }
 
+// ==================== 错题智能分析 ====================
+// 不规则动词简表（仅用于分析比对）
+const IRREGULAR_VERBS = {
+  'see': 'saw', 'go': 'went', 'buy': 'bought', 'come': 'came', 'eat': 'ate',
+  'take': 'took', 'give': 'gave', 'write': 'wrote', 'speak': 'spoke', 'break': 'broke',
+  'drive': 'drove', 'fly': 'flew', 'know': 'knew', 'grow': 'grew', 'throw': 'threw',
+  'draw': 'drew', 'blow': 'blew', 'begin': 'began', 'sing': 'sang', 'ring': 'rang',
+  'swim': 'swam', 'drink': 'drank', 'sit': 'sat', 'rise': 'rose', 'hide': 'hid',
+  'ride': 'rode', 'bite': 'bit', 'forget': 'forgot', 'get': 'got', 'forgive': 'forgave',
+  'choose': 'chose', 'freeze': 'froze', 'steal': 'stole', 'wear': 'wore', 'tear': 'tore',
+  'lie': 'lay', 'lay': 'laid', 'feel': 'felt', 'leave': 'left', 'keep': 'kept',
+  'sleep': 'slept', 'sweep': 'swept', 'meet': 'met', 'lead': 'led', 'feed': 'fed',
+  'hold': 'held', 'tell': 'told', 'sell': 'sold', 'stand': 'stood', 'understand': 'understood',
+  'find': 'found', 'wind': 'wound', 'make': 'made', 'pay': 'paid', 'say': 'said',
+  'hear': 'heard', 'build': 'built', 'lend': 'lent', 'send': 'sent', 'spend': 'spent',
+  'think': 'thought', 'bring': 'brought', 'catch': 'caught', 'teach': 'taught',
+  'cut': 'cut', 'put': 'put', 'read': 'read', 'let': 'let', 'set': 'set',
+  'hit': 'hit', 'cost': 'cost', 'hurt': 'hurt', 'shut': 'shut', 'spread': 'spread',
+  'run': 'ran', 'win': 'won', 'lose': 'lost', 'shine': 'shone', 'shoot': 'shot'
+};
+
+function analyzeMistake(userAnswer, correctAnswer, tense) {
+  const ua = normalizeAnswer(userAnswer);
+  const ca = normalizeAnswer(correctAnswer);
+  if (!ua) return '未填写答案。试着根据句子的时间线索和时态要求，填入动词的正确形式。';
+
+  const uWords = ua.split(/\s+/);
+  const cWords = ca.split(/\s+/);
+  const beList = ['am', 'is', 'are', 'was', 'were', 'be', 'been'];
+  const auxList = ['do', 'does', 'did', 'will', 'have', 'has', 'had', 'can', 'could', 'would', 'should'];
+
+  const cHasBe = cWords.some(w => beList.includes(w));
+  const uHasBe = uWords.some(w => beList.includes(w));
+  const cHasIng = cWords.some(w => w.endsWith('ing'));
+  const uHasIng = uWords.some(w => w.endsWith('ing'));
+  const cHasAux = cWords.some(w => auxList.includes(w));
+  const uHasAux = uWords.some(w => auxList.includes(w));
+  const cLast = cWords[cWords.length - 1];
+  const uLast = uWords[uWords.length - 1];
+
+  // 1. 一般现在时第三人称单数忘加 -s/-es
+  if (tense === '一般现在时' && (cLast.endsWith('s') && !cLast.endsWith('ss') && !cLast.endsWith('ing'))) {
+    const baseForm = cLast.replace(/es$/, '').replace(/s$/, '');
+    if (baseForm === uLast || uLast === baseForm + 'e') {
+      return '主语是第三人称单数（he/she/it），动词需加 -s 或 -es。你的答案漏掉了这个变化。';
+    }
+  }
+
+  // 2. be 动词后缺少 -ing
+  if (cHasBe && cHasIng && uHasBe && !uHasIng) {
+    return 'be 动词（am/is/are/was/were）后面需要接「动词-ing」形式构成进行时，你漏掉了 -ing。';
+  }
+
+  // 3. 缺少 be 动词（有 -ing 但没 be）
+  if (cHasBe && !uHasBe && uHasIng) {
+    return '进行时态需要「be + 动词-ing」，你缺少了 be 动词（am/is/are/was/were）。';
+  }
+
+  // 4. 缺少 be 动词且没有 -ing
+  if (cHasBe && cHasIng && !uHasBe && !uHasIng) {
+    const mainVerb = cWords.find(w => w.endsWith('ing'));
+    const baseFromIng = mainVerb ? mainVerb.replace(/ing$/, '') : '';
+    if (uLast === baseFromIng || uLast === baseFromIng + 'e') {
+      return '进行时态的结构是「be + 动词-ing」，你缺少了 be 动词，且动词要加 -ing。';
+    }
+  }
+
+  // 5. 助动词后动词形式错误（did/does 后用了过去式或三单）
+  if (uHasAux) {
+    const auxWords = uWords.filter(w => auxList.includes(w));
+    const hasDid = auxWords.includes('did') || auxWords.includes("didn't");
+    const hasDoes = auxWords.includes('does') || auxWords.includes("doesn't");
+    if ((hasDid || hasDoes) && uLast !== cLast) {
+      // 检查用户是否在助动词后用了非原形
+      if (uLast.endsWith('ed') || uLast.endsWith('s') || uLast.endsWith('es')) {
+        return '在助动词 do/does/did 后面，动词必须用原形，不能加 -ed、-s 等变化。';
+      }
+    }
+    // will/can/should 后必须用原形
+    const hasModal = auxWords.some(w => ['will', 'would', 'can', 'could', 'should', 'must'].includes(w));
+    if (hasModal && uLast !== cLast && (uLast.endsWith('ed') || uLast.endsWith('ing') || uLast.endsWith('s'))) {
+      return '情态动词（will/can/should 等）后面必须用动词原形，不能加 -ed、-ing 或 -s。';
+    }
+  }
+
+  // 6. have/has/had 后缺少过去分词
+  if (['have', 'has', 'had'].some(w => cWords.includes(w))) {
+    if (!uLast.endsWith('ed') && !isIrregularPastPart(uLast) && uLast !== cLast) {
+      if (uLast.endsWith('ing')) {
+        return 'have/has/had 后面要用过去分词，而不是 -ing 形式。完成时的结构是「have/has/had + 过去分词」。';
+      }
+      if (/* base form */ uLast === (cLast.endsWith('ed') ? cLast.replace(/d$/, '').replace(/e$/, '') : '')) {
+        return 'have/has/had 后面需要用过去分词。你用的是动词原形，应该改为过去分词形式。';
+      }
+      return '完成时态的结构是「have/has/had + 过去分词」，请检查过去分词是否正确。';
+    }
+  }
+
+  // 7. 拼写接近（字符串相似度高）
+  if (levenshteinDist(ua, ca) <= 2 && ua !== ca) {
+    return '答案很接近，但个别字母拼写有误，请仔细检查单词拼写。';
+  }
+
+  // 8. 缺少助动词
+  if (cWords.length > 1 && uWords.length === 1 && cHasAux) {
+    const missingAux = cWords.find(w => auxList.includes(w));
+    if (missingAux) {
+      return `缺少助动词「${missingAux}」。该时态需要助动词来构成，请查看结构公式。`;
+    }
+  }
+
+  // 9. 否定式缺少 not
+  if ((ca.includes("n't") || ca.includes(' not')) && !(ua.includes("n't") || ua.includes(' not'))) {
+    return '这道题需要否定形式，你缺少了 not 或缩写 n\'t。';
+  }
+
+  // 10. 过去式写错（用原形代替过去式）
+  if (tense === '一般过去时' && uLast === getBaseForm(cLast) || 
+      (tense === '一般过去时' && !uLast.endsWith('ed') && cLast.endsWith('ed') && uLast + 'ed' === cLast)) {
+    return '一般过去时的动词要用过去式。规则动词加 -ed，不规则动词需要单独记忆。';
+  }
+
+  // 11. 将来时缺少 will/be going to
+  if (tense === '一般将来时' && cHasAux && !uHasAux) {
+    return '一般将来时需要「will + 动词原形」或「be going to + 动词原形」，你缺少了 will/going to。';
+  }
+
+  // 默认：通用错误提示
+  return `动词形式不正确。请回顾「${tense}」的结构公式，注意助动词、词尾变化和拼写。`;
+}
+
+// 辅助：检查是否为不规则过去分词形式
+function isIrregularPastPart(word) {
+  return Object.values(IRREGULAR_VERBS).includes(word);
+}
+
+// 辅助：获取动词原形
+function getBaseForm(word) {
+  if (word.endsWith('ed')) {
+    const base = word.replace(/ed$/, '').replace(/ied$/, 'y');
+    return base;
+  }
+  for (const [base, past] of Object.entries(IRREGULAR_VERBS)) {
+    if (past === word) return base;
+  }
+  return word;
+}
+
+// 辅助：计算莱文斯坦距离
+function levenshteinDist(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (a[i - 1] === b[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1;
+      }
+    }
+  }
+  return dp[m][n];
+}
+
 function submitQuiz() {
   if (!currentQuiz || quizSubmitted) return;
 
@@ -949,6 +1126,11 @@ function submitQuiz() {
       errorTenseCount[q.tense]++;
     }
 
+    let analysis = '';
+    if (!isCorrect) {
+      analysis = analyzeMistake(userAns, q.answer, q.tense);
+    }
+
     let feedbackHtml = '';
     if (isCorrect) {
       feedbackHtml += `<div>✅ 正确答案：<span class="correct-ans">${escapeHtml(q.answer)}</span> ✓</div>`;
@@ -956,6 +1138,9 @@ function submitQuiz() {
       feedbackHtml += `<div>❌ 你的答案 <span class="your-answer">"${escapeHtml(userAns || '（未填）')}"</span> → 正确答案 <span class="correct-ans">${escapeHtml(q.answer)}</span></div>`;
     }
     feedbackHtml += `<div class="explanation">💡 涉及时态：<span class="tense-tag" onclick="showTenseModal('${escapeHtml(q.tense)}')">${escapeHtml(q.tense)}</span></div>`;
+    if (analysis) {
+      feedbackHtml += `<div class="q-analysis">🔍 <strong>问题分析：</strong>${escapeHtml(analysis)}</div>`;
+    }
 
     feedbackDiv.innerHTML = feedbackHtml;
 
@@ -966,7 +1151,8 @@ function submitQuiz() {
       isCorrect: isCorrect,
       tense: q.tense,
       difficulty: q.difficulty,
-      translation: q.translation || ''
+      translation: q.translation || '',
+      analysis: analysis
     });
   });
 
@@ -1105,11 +1291,13 @@ function showHistoryDetail(index) {
       const icon = r.isCorrect !== undefined ? (r.isCorrect ? '✅' : '❌') : (r.allCorrect ? '✅' : '❌');
       const answer = r.answer || (r.answers ? r.answers.join(', ') : '');
       const userAnswer = r.userAnswer || (r.userAnswers ? r.userAnswers.join(', ') : '');
+      const analysisText = r.analysis || '';
       html += `<div style="margin-bottom:6px;padding:6px;border-radius:6px;background:${icon === '✅' ? 'rgba(0,184,148,0.06)' : 'rgba(225,112,85,0.06)'};">
         ${icon} ${escapeHtml(r.sentence)}<br>
         <span style="font-size:12px;color:#5a6a7a;">答案：${escapeHtml(answer)}</span>
         ${icon === '❌' ? `<span style="font-size:12px;color:#e17055;"> · 你的：${escapeHtml(userAnswer || '（未填）')}</span>` : ''}
         <span class="hd-tense" onclick="showTenseModal('${escapeHtml(r.tense)}')">📖 ${escapeHtml(r.tense)}</span>
+        ${analysisText ? `<div style="margin-top:4px;padding:4px 8px;background:#fef9e7;border-radius:4px;font-size:12px;color:#7d6608;border-left:3px solid #e67e22;">🔍 ${escapeHtml(analysisText)}</div>` : ''}
       </div>`;
     });
   }
