@@ -135,8 +135,10 @@ body {
   font-weight: 600;
 }
 .diff-easy { background: #e8f8f0; color: #27ae60; }
-.diff-medium { background: #fef9e7; color: #f39c12; }
+.diff-normal { background: #fef9e7; color: #f39c12; }
 .diff-hard { background: #fdedec; color: #e74c3c; }
+.diff-hell { background: #f3e5f5; color: #8e44ad; }
+.diff-abyss { background: #1a1a2e; color: #e84118; }
 
 .quiz-item .q-sentence {
   font-size: 16px; line-height: 1.9; color: #2d3436;
@@ -382,14 +384,17 @@ body {
       <div class="difficulty-select" id="difficulty-select">
         <button class="btn-diff active" onclick="selectDifficulty('any', this)" data-diff="any">🎲 随意</button>
         <button class="btn-diff" onclick="selectDifficulty('easy', this)" data-diff="easy">🟢 简单</button>
-        <button class="btn-diff" onclick="selectDifficulty('medium', this)" data-diff="medium">🟡 中等</button>
-        <button class="btn-diff" onclick="selectDifficulty('hard', this)" data-diff="hard">🔴 困难</button>
+        <button class="btn-diff" onclick="selectDifficulty('normal', this)" data-diff="normal">🟡 普通</button>
+        <button class="btn-diff" onclick="selectDifficulty('hard', this)" data-diff="hard">🟠 困难</button>
+        <button class="btn-diff" onclick="selectDifficulty('hell', this)" data-diff="hell">🟣 地狱</button>
+        <button class="btn-diff" onclick="selectDifficulty('abyss', this)" data-diff="abyss">💀 深渊</button>
       </div>
 
       <!-- 测验信息 -->
       <div class="quiz-info-bar" id="quiz-info-bar">
         <span>📝 <strong>每次 10 题</strong></span>
         <span>🎯 <strong>涵盖 9 种时态</strong></span>
+        <span>🔥 <strong>5 档难度</strong></span>
         <span id="diff-label">📊 难度随机分布</span>
       </div>
 
@@ -403,7 +408,7 @@ body {
 
       <!-- 按钮区 -->
       <div id="quiz-actions" style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="startQuiz()">🔄 出题（10道）</button>
+        <button class="btn btn-primary" onclick="startQuiz()" id="btn-start">🔄 出题（10道）</button>
         <button class="btn btn-success" onclick="submitQuiz()" id="btn-submit" disabled>✅ 提交检测</button>
       </div>
 
@@ -633,67 +638,100 @@ const TENSE_LESSONS = {
 
 // ==================== 题库（单空 + 中文翻译） ====================
 const QUESTION_BANK = [
-  // ===== 一般现在时 =====
+  // =====================================================
+  // 🟢 简单 (easy) — 基础句式，小学/初中核心词汇
+  // =====================================================
+  // 一般现在时
   { sentence: "The sun ______ (rise) in the east every morning.", answer: "rises", tense: "一般现在时", difficulty: "easy", translation: "太阳每天早晨从东边升起。" },
   { sentence: "My father ______ (not drink) coffee at all.", answer: "doesn't drink", tense: "一般现在时", difficulty: "easy", translation: "我爸爸根本不喝咖啡。" },
-  { sentence: "She usually ______ (go) to school by bus, but today she walks.", answer: "goes", tense: "一般现在时", difficulty: "easy", translation: "她通常坐公交上学，但今天走路。" },
-  { sentence: "The train ______ (leave) at 8 p.m. this evening.", answer: "leaves", tense: "一般现在时", difficulty: "medium", translation: "火车今晚8点出发。" },
-  { sentence: "The teacher told us that light ______ (travel) faster than sound.", answer: "travels", tense: "一般现在时", difficulty: "hard", translation: "老师告诉我们光比声音传播得快。" },
-  { sentence: "If it ______ (rain) tomorrow, we will cancel the picnic.", answer: "rains", tense: "一般现在时", difficulty: "hard", translation: "如果明天下雨，我们就取消野餐。（主将从现）" },
-
-  // ===== 一般过去时 =====
+  { sentence: "She usually ______ (go) to school by bus.", answer: "goes", tense: "一般现在时", difficulty: "easy", translation: "她通常坐公交上学。" },
+  // 一般过去时
   { sentence: "Yesterday I ______ (see) an old friend in the supermarket.", answer: "saw", tense: "一般过去时", difficulty: "easy", translation: "昨天我在超市见到了一位老朋友。" },
   { sentence: "She ______ (not go) to school yesterday because she was ill.", answer: "didn't go", tense: "一般过去时", difficulty: "easy", translation: "她昨天没去上学，因为生病了。" },
   { sentence: "My family ______ (move) to this city ten years ago.", answer: "moved", tense: "一般过去时", difficulty: "easy", translation: "我家十年前搬到了这座城市。" },
-  { sentence: "She ______ (buy) a new phone last week but lost it yesterday.", answer: "bought", tense: "一般过去时", difficulty: "medium", translation: "她上周买了个新手机，但昨天丢了。" },
-  { sentence: "When I was young, I often ______ (climb) the big tree in our garden.", answer: "climbed", tense: "一般过去时", difficulty: "medium", translation: "我小时候经常爬我家花园里的大树。" },
-  { sentence: "The old man ______ (sit) down and began to tell a story.", answer: "sat", tense: "一般过去时", difficulty: "medium", translation: "老人坐下来，开始讲一个故事。" },
-
-  // ===== 一般将来时 =====
+  // 一般将来时
   { sentence: "I promise I ______ (call) you as soon as I arrive.", answer: "will call", tense: "一般将来时", difficulty: "easy", translation: "我保证一到就给你打电话。" },
   { sentence: "She ______ (visit) her grandparents next Sunday.", answer: "will visit", tense: "一般将来时", difficulty: "easy", translation: "她下周日要去看望祖父母。" },
-  { sentence: "Look at the clouds! It ______ (rain) soon.", answer: "is going to rain", tense: "一般将来时", difficulty: "medium", translation: "看那些云！马上就要下雨了。" },
-  { sentence: "Scientists believe robots ______ (do) most housework in the future.", answer: "will do", tense: "一般将来时", difficulty: "medium", translation: "科学家相信未来机器人会做大部分家务。" },
-  { sentence: "I ______ (not tell) anyone about this secret, I promise.", answer: "won't tell", tense: "一般将来时", difficulty: "easy", translation: "我不会把这个秘密告诉任何人，我保证。" },
-
-  // ===== 现在进行时 =====
+  // 现在进行时
   { sentence: "Listen! Someone ______ (sing) in the next room.", answer: "is singing", tense: "现在进行时", difficulty: "easy", translation: "听！有人在隔壁房间唱歌。" },
   { sentence: "Tom ______ (clean) his room right now.", answer: "is cleaning", tense: "现在进行时", difficulty: "easy", translation: "Tom正在打扫他的房间。" },
-  { sentence: "The students ______ (prepare) for the final exam these days.", answer: "are preparing", tense: "现在进行时", difficulty: "medium", translation: "学生们这些天正在准备期末考试。" },
-  { sentence: "We ______ (leave) for Beijing tomorrow morning.", answer: "are leaving", tense: "现在进行时", difficulty: "medium", translation: "我们明天早上要去北京。（进行时表将来）" },
-  { sentence: "Don't make any noise — the baby ______ (sleep).", answer: "is sleeping", tense: "现在进行时", difficulty: "easy", translation: "别出声——宝宝在睡觉。" },
-
-  // ===== 现在完成时 =====
+  // 现在完成时
   { sentence: "I ______ (already finish) my homework.", answer: "have already finished", tense: "现在完成时", difficulty: "easy", translation: "我已经完成作业了。" },
-  { sentence: "She ______ (live) here since she was a child.", answer: "has lived", tense: "现在完成时", difficulty: "medium", translation: "她从小就一直住在这里。" },
-  { sentence: "______ you ever ______ (be) to the Great Wall?", answer: "have been", tense: "现在完成时", difficulty: "medium", translation: "你去过长城吗？" },
-  { sentence: "He ______ (not reply) to my message yet.", answer: "hasn't replied", tense: "现在完成时", difficulty: "medium", translation: "他还没有回复我的消息。" },
-  { sentence: "Technology ______ (change) our lives greatly in the past decade.", answer: "has changed", tense: "现在完成时", difficulty: "hard", translation: "过去十年，科技极大地改变了我们的生活。" },
-
-  // ===== 过去完成时 =====
-  { sentence: "By the time I arrived, the movie ______ (already start).", answer: "had already started", tense: "过去完成时", difficulty: "medium", translation: "我到的时候，电影已经开始了。" },
-  { sentence: "She realized she ______ (leave) her phone at home.", answer: "had left", tense: "过去完成时", difficulty: "medium", translation: "她意识到她把手机忘在家里了。" },
-  { sentence: "Before he became famous, he ______ (work) as a waiter for years.", answer: "had worked", tense: "过去完成时", difficulty: "medium", translation: "在他出名之前，他已经当了好几年服务员。" },
-  { sentence: "I ______ (plan) to visit her, but she had already left.", answer: "had planned", tense: "过去完成时", difficulty: "hard", translation: "我本打算去看她，但她已经走了。" },
-
-  // ===== 过去进行时 =====
+  // 过去进行时
   { sentence: "At 8 p.m. yesterday, I ______ (watch) TV at home.", answer: "was watching", tense: "过去进行时", difficulty: "easy", translation: "昨晚8点我在家看电视。" },
-  { sentence: "While she ______ (read), the phone suddenly rang.", answer: "was reading", tense: "过去进行时", difficulty: "medium", translation: "她正在看书时，电话突然响了。" },
-  { sentence: "I ______ (walk) home when I met an old friend.", answer: "was walking", tense: "过去进行时", difficulty: "medium", translation: "我正走回家时遇到了一位老朋友。" },
-  { sentence: "The students ______ (talk) noisily when the teacher entered.", answer: "were talking", tense: "过去进行时", difficulty: "medium", translation: "老师进来时，学生们正在大声讲话。" },
-
-  // ===== 将来进行时 =====
+  // 将来进行时
   { sentence: "At 9 a.m. next Monday, we ______ (take) the math exam.", answer: "will be taking", tense: "将来进行时", difficulty: "easy", translation: "下周一上午9点，我们将在考数学。" },
-  { sentence: "This time tomorrow I ______ (fly) to Beijing.", answer: "will be flying", tense: "将来进行时", difficulty: "medium", translation: "明天这个时候我正飞往北京。" },
-  { sentence: "Don't call me at 8 p.m. — I ______ (have) dinner then.", answer: "will be having", tense: "将来进行时", difficulty: "medium", translation: "晚上8点别给我打电话——那时我在吃晚饭。" },
-  { sentence: "By next summer, she ______ (study) at a famous university.", answer: "will be studying", tense: "将来进行时", difficulty: "hard", translation: "明年夏天，她将在一所著名大学学习。" },
 
-  // ===== 现在完成进行时 =====
-  { sentence: "I am tired because I ______ (work) all morning.", answer: "have been working", tense: "现在完成进行时", difficulty: "medium", translation: "我很累，因为我工作了整整一上午。" },
-  { sentence: "She ______ (study) English for six years.", answer: "has been studying", tense: "现在完成进行时", difficulty: "medium", translation: "她已经学了六年英语了。" },
-  { sentence: "How long ______ you ______ (wait) here?", answer: "have you been waiting", tense: "现在完成进行时", difficulty: "hard", translation: "你在这里等了多久了？" },
-  { sentence: "It ______ (rain) since last night.", answer: "has been raining", tense: "现在完成进行时", difficulty: "medium", translation: "从昨晚起就一直在下雨。" },
-  { sentence: "The children's clothes are dirty because they ______ (play) in the mud.", answer: "have been playing", tense: "现在完成进行时", difficulty: "hard", translation: "孩子们的衣服很脏，因为他们一直在泥里玩。" },
+  // =====================================================
+  // 🟡 普通 (normal) — 加入复合时态辨析，主将从现、进行表将来等
+  // =====================================================
+  { sentence: "The train ______ (leave) at 8 p.m. this evening.", answer: "leaves", tense: "一般现在时", difficulty: "normal", translation: "火车今晚8点出发。（时间表将来）" },
+  { sentence: "She ______ (buy) a new phone last week but lost it yesterday.", answer: "bought", tense: "一般过去时", difficulty: "normal", translation: "她上周买了个新手机，但昨天丢了。" },
+  { sentence: "When I was young, I often ______ (climb) the big tree in our garden.", answer: "climbed", tense: "一般过去时", difficulty: "normal", translation: "我小时候经常爬我家花园里的大树。" },
+  { sentence: "Look at the clouds! It ______ (rain) soon.", answer: "is going to rain", tense: "一般将来时", difficulty: "normal", translation: "看那些云！马上就要下雨了。（be going to 表推测）" },
+  { sentence: "I ______ (not tell) anyone about this secret, I promise.", answer: "won't tell", tense: "一般将来时", difficulty: "normal", translation: "我不会把这个秘密告诉任何人，我保证。" },
+  { sentence: "We ______ (leave) for Beijing tomorrow morning.", answer: "are leaving", tense: "现在进行时", difficulty: "normal", translation: "我们明天早上要去北京。（进行时表将来）" },
+  { sentence: "The students ______ (prepare) for the final exam these days.", answer: "are preparing", tense: "现在进行时", difficulty: "normal", translation: "学生们这些天正在准备期末考试。" },
+  { sentence: "She ______ (live) here since she was a child.", answer: "has lived", tense: "现在完成时", difficulty: "normal", translation: "她从小就一直住在这里。" },
+  { sentence: "______ you ever ______ (be) to the Great Wall?", answer: "have been", tense: "现在完成时", difficulty: "normal", translation: "你去过长城吗？" },
+  { sentence: "He ______ (not reply) to my message yet.", answer: "hasn't replied", tense: "现在完成时", difficulty: "normal", translation: "他还没有回复我的消息。" },
+  { sentence: "By the time I arrived, the movie ______ (already start).", answer: "had already started", tense: "过去完成时", difficulty: "normal", translation: "我到的时候，电影已经开始了。" },
+  { sentence: "She realized she ______ (leave) her phone at home.", answer: "had left", tense: "过去完成时", difficulty: "normal", translation: "她意识到她把手机忘在家里了。" },
+  { sentence: "Before he became famous, he ______ (work) as a waiter for years.", answer: "had worked", tense: "过去完成时", difficulty: "normal", translation: "在他出名之前，他已经当了好几年服务员。" },
+  { sentence: "While she ______ (read), the phone suddenly rang.", answer: "was reading", tense: "过去进行时", difficulty: "normal", translation: "她正在看书时，电话突然响了。" },
+  { sentence: "The students ______ (talk) noisily when the teacher entered.", answer: "were talking", tense: "过去进行时", difficulty: "normal", translation: "老师进来时，学生们正在大声讲话。" },
+  { sentence: "This time tomorrow I ______ (fly) to Beijing.", answer: "will be flying", tense: "将来进行时", difficulty: "normal", translation: "明天这个时候我正飞往北京。" },
+  { sentence: "Don't call me at 8 p.m. — I ______ (have) dinner then.", answer: "will be having", tense: "将来进行时", difficulty: "normal", translation: "晚上8点别给我打电话——那时我在吃晚饭。" },
+  { sentence: "She ______ (study) English for six years.", answer: "has been studying", tense: "现在完成进行时", difficulty: "normal", translation: "她已经学了六年英语了。" },
+  { sentence: "I am tired because I ______ (work) all morning.", answer: "have been working", tense: "现在完成进行时", difficulty: "normal", translation: "我很累，因为我工作了整整一上午。" },
+  { sentence: "It ______ (rain) since last night.", answer: "has been raining", tense: "现在完成进行时", difficulty: "normal", translation: "从昨晚起就一直在下雨。" },
+
+  // =====================================================
+  // 🟠 困难 (hard) — 长难句、高级词汇、多从句嵌套
+  // =====================================================
+  { sentence: "The teacher told us that light ______ (travel) faster than sound.", answer: "travels", tense: "一般现在时", difficulty: "hard", translation: "老师告诉我们光比声音传播得快。（客观真理永远用一般现在时）" },
+  { sentence: "If it ______ (rain) tomorrow, we will cancel the picnic.", answer: "rains", tense: "一般现在时", difficulty: "hard", translation: "如果明天下雨，我们就取消野餐。（主将从现）" },
+  { sentence: "The witness insisted that she ______ (not see) the suspect before the incident.", answer: "hadn't seen", tense: "过去完成时", difficulty: "hard", translation: "证人坚称在事发前她没有见过嫌疑人。" },
+  { sentence: "Despite the heavy snow, the rescue team ______ (manage) to reach the trapped hikers before nightfall.", answer: "managed", tense: "一般过去时", difficulty: "hard", translation: "尽管大雪纷飞，救援队还是在夜幕降临前成功到达了被困的登山者那里。" },
+  { sentence: "The scientist ______ (dedicate) her entire career to researching renewable energy solutions.", answer: "has dedicated", tense: "现在完成时", difficulty: "hard", translation: "这位科学家将她整个职业生涯奉献给了可再生能源解决方案的研究。" },
+  { sentence: "Nobody realized that the bridge ______ (collapse) until the morning news reported it.", answer: "had collapsed", tense: "过去完成时", difficulty: "hard", translation: "直到早间新闻报道，没有人意识到那座桥已经坍塌了。" },
+  { sentence: "The committee ______ (evaluate) all proposals before announcing the winner next week.", answer: "will have evaluated", tense: "将来完成时", difficulty: "hard", translation: "委员会将在下周宣布获胜者之前评估完所有提案。" },
+  { sentence: "While the orchestra ______ (perform), a sudden power outage interrupted the concert.", answer: "was performing", tense: "过去进行时", difficulty: "hard", translation: "当管弦乐队正在演奏时，突如其来的停电打断了音乐会。" },
+  { sentence: "The patient ______ (recover) steadily since the surgery last month.", answer: "has been recovering", tense: "现在完成进行时", difficulty: "hard", translation: "自从上个月手术后，病人一直在稳步恢复。" },
+  { sentence: "By the time the negotiations conclude, the delegates ______ (discuss) for over twelve consecutive hours.", answer: "will have been discussing", tense: "将来完成进行时", difficulty: "hard", translation: "到谈判结束时，代表们将已经连续讨论了超过十二个小时。" },
+  { sentence: "The phenomenon of global warming ______ (attract) widespread attention over the past two decades.", answer: "has attracted", tense: "现在完成时", difficulty: "hard", translation: "过去二十年里，全球变暖现象引起了广泛关注。" },
+  { sentence: "The archaeologists discovered that the ancient civilization ______ (flourish) for over a millennium before it mysteriously vanished.", answer: "had flourished", tense: "过去完成时", difficulty: "hard", translation: "考古学家发现那个古代文明在神秘消失之前已经繁荣了一千多年。" },
+  { sentence: "At this time next year, the team ______ (conduct) a series of experiments on the new satellite system.", answer: "will be conducting", tense: "将来进行时", difficulty: "hard", translation: "明年这个时候，团队将在新的卫星系统上进行一系列实验。" },
+
+  // =====================================================
+  // 🟣 地狱 (hell) — 双空格，涵盖所有时态，综合辨析
+  // =====================================================
+  { sentence: "My brother ______ (study) abroad for three years now and he ______ (plan) to return next month.", answers: ["has been studying", "is planning"], tense: "现在完成进行时 + 现在进行时", difficulty: "hell", translation: "我哥哥已经在国外学习了三年，他计划下个月回来。" },
+  { sentence: "By the time the firefighters ______ (arrive), the fire ______ (already spread) to the second floor.", answers: ["arrived", "had already spread"], tense: "一般过去时 + 过去完成时", difficulty: "hell", translation: "消防员到达时，火势已经蔓延到了二楼。" },
+  { sentence: "She ______ (practise) the piano when I called, so she ______ (not hear) the phone ring.", answers: ["was practising", "didn't hear"], tense: "过去进行时 + 一般过去时", difficulty: "hell", translation: "我打电话时她正在练钢琴，所以她没有听到电话响。" },
+  { sentence: "The teacher ______ (explain) a difficult concept right now, and the students ______ (take) notes carefully.", answers: ["is explaining", "are taking"], tense: "现在进行时 + 现在进行时", difficulty: "hell", translation: "老师正在讲解一个难的概念，学生们在认真做笔记。" },
+  { sentence: "I ______ (never see) such a beautiful sunset before I ______ (visit) Santorini last summer.", answers: ["had never seen", "visited"], tense: "过去完成时 + 一般过去时", difficulty: "hell", translation: "在我去年夏天去圣托里尼之前，我从没见过这么美的日落。" },
+  { sentence: "If she ______ (arrive) on time, she ______ (join) us for the opening speech.", answers: ["arrives", "will join"], tense: "一般现在时 + 一般将来时", difficulty: "hell", translation: "如果她准时到达，她就会和我们一起听开幕演讲。（主将从现）" },
+  { sentence: "The researchers ______ (collect) data for months, and tomorrow they finally ______ (present) their findings.", answers: ["have been collecting", "will present"], tense: "现在完成进行时 + 一般将来时", difficulty: "hell", translation: "研究人员已经收集了几个月的数据，明天他们终于要展示研究结果了。" },
+  { sentence: "While I ______ (walk) through the park, I noticed that somebody ______ (leave) a bag under the bench.", answers: ["was walking", "had left"], tense: "过去进行时 + 过去完成时", difficulty: "hell", translation: "当我走过公园时，我注意到有人把一个包忘在了长椅下面。" },
+  { sentence: "She ______ (work) on this project since January, and she believes she ______ (finish) it by Friday.", answers: ["has been working", "will finish"], tense: "现在完成进行时 + 一般将来时", difficulty: "hell", translation: "她从一月起就在做这个项目，她相信周五前能完成。" },
+  { sentence: "The guide told us that the temple ______ (build) in the 12th century and since then it ______ (attract) millions of visitors.", answers: ["was built", "has attracted"], tense: "一般过去时（被动）+ 现在完成时", difficulty: "hell", translation: "导游告诉我们这座寺庙建于12世纪，从那时起吸引了数百万游客。" },
+  { sentence: "Don't call between 2 and 4 — I ______ (have) a meeting then and afterwards I ______ (write) the monthly report.", answers: ["will be having", "will be writing"], tense: "将来进行时 + 将来进行时", difficulty: "hell", translation: "2点到4点之间别打电话——那时我在开会，之后我要写月度报告。" },
+  { sentence: "When we finally ______ (find) the cabin, we realized we ______ (walk) in the wrong direction for hours.", answers: ["found", "had been walking"], tense: "一般过去时 + 过去完成进行时", difficulty: "hell", translation: "当我们终于找到小屋时，我们意识到我们已经朝错误的方向走了好几个小时。" },
+  { sentence: "By next June, she ______ (teach) at this school for 20 years, and she ______ (probably retire) the year after.", answers: ["will have been teaching", "will probably retire"], tense: "将来完成进行时 + 一般将来时", difficulty: "hell", translation: "到明年六月，她在这所学校教书就满20年了，她很可能后年退休。" },
+  { sentence: "The children ______ (play) outside when suddenly a strange man ______ (appear) at the gate.", answers: ["were playing", "appeared"], tense: "过去进行时 + 一般过去时", difficulty: "hell", translation: "孩子们正在外面玩，突然一个陌生男人出现在大门口。" },
+
+  // =====================================================
+  // 💀 深渊 (abyss) — 段落填空，2~3个空格，小型阅读理解
+  // =====================================================
+  { sentence: "Last summer ______ (be) truly unforgettable. My family and I ______ (spend) two weeks in Kyoto, exploring ancient temples and trying local food.", answers: ["was", "spent"], tense: "一般过去时", difficulty: "abyss", translation: "去年夏天真是令人难忘。我和家人在京都度过了两周，探索古寺，品尝当地美食。" },
+  { sentence: "I ______ (not see) Sarah for ages. The last time we met, she told me she ______ (move) to London to pursue a master's degree. I wonder how she is now.", answers: ["haven't seen", "was moving"], tense: "现在完成时 + 过去进行时（表将来）", difficulty: "abyss", translation: "我好久没见到Sarah了。上次见面时，她告诉我她要搬到伦敦去读硕士学位。不知道她现在怎么样。" },
+  { sentence: "When I woke up this morning, the sun ______ (shine) brightly. But by the time I ______ (finish) my breakfast, dark clouds had covered the sky. It's raining heavily now.", answers: ["was shining", "finished"], tense: "过去进行时 + 一般过去时", difficulty: "abyss", translation: "今天早上我醒来时，阳光明媚。但当我吃完早饭时，乌云已经遮住了天空。现在正下着大雨。" },
+  { sentence: "Tom ______ (always dream) of becoming a pilot. At the moment, he ______ (train) at a flight academy and next year he will get his license.", answers: ["has always dreamed", "is training"], tense: "现在完成时 + 现在进行时", difficulty: "abyss", translation: "Tom一直梦想成为飞行员。此刻他正在飞行学院训练，明年他将获得执照。" },
+  { sentence: "The professor explained that climate change ______ (accelerate) dramatically since the Industrial Revolution. Scientists warn that if we ______ (not take) action soon, the consequences will be severe.", answers: ["has accelerated", "don't take"], tense: "现在完成时 + 一般现在时（主将从现）", difficulty: "abyss", translation: "教授解释说，自工业革命以来，气候变化急剧加速。科学家警告，如果我们不尽快采取行动，后果将十分严重。" },
+  { sentence: "I was late for school this morning because I ______ (oversleep). When I finally ______ (arrive) at the classroom, the lesson had already begun.", answers: ["overslept", "arrived"], tense: "一般过去时", difficulty: "abyss", translation: "今天早上我上学迟到了，因为睡过头了。当我终于到达教室时，课已经开始了。" },
+  { sentence: "My grandmother ______ (live) in this village her entire life. She often tells me stories about how much the place ______ (change) since she was a little girl.", answers: ["has lived", "has changed"], tense: "现在完成时", difficulty: "abyss", translation: "我祖母一辈子都住在这个村子。她经常给我讲这个地方自她小时候以来发生了多大的变化。" },
+  { sentence: "At the job interview yesterday, the manager asked me what I ______ (study) at university and why I ______ (want) to work for their company. I hope they call me back soon.", answers: ["had studied", "wanted"], tense: "过去完成时 + 一般过去时", difficulty: "abyss", translation: "在昨天的工作面试中，经理问我在大学学了什么，以及为什么想为他们的公司工作。希望他们很快给我回电话。" },
 ];
 
 // ==================== 存储与状态 ====================
@@ -742,7 +780,9 @@ function escapeHtml(str) {
 
 // ==================== 时态弹窗 ====================
 function showTenseModal(tenseName) {
-  const lesson = TENSE_LESSONS[tenseName];
+  // 支持复合时态名称，如 "现在完成进行时 + 一般现在时"，取第一个
+  const parts = tenseName.split(/[+＋]/).map(s => s.trim());
+  const lesson = TENSE_LESSONS[parts[0]] || TENSE_LESSONS[tenseName];
   if (!lesson) return;
 
   const modal = document.getElementById('tense-modal');
@@ -801,7 +841,7 @@ function selectDifficulty(diff, btn) {
   document.querySelectorAll('.btn-diff').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 
-  const labels = { any: '📊 难度随机分布', easy: '🟢 仅简单难度', medium: '🟡 仅中等难度', hard: '🔴 仅困难难度' };
+  const labels = { any: '📊 难度随机分布', easy: '🟢 仅简单难度', normal: '🟡 仅普通难度', hard: '🟠 仅困难难度', hell: '🟣 仅地狱难度', abyss: '💀 仅深渊难度' };
   document.getElementById('diff-label').textContent = labels[diff] || labels.any;
 }
 
@@ -824,6 +864,7 @@ function startQuiz() {
   renderQuiz();
   document.getElementById('result-area').style.display = 'none';
   document.getElementById('btn-submit').disabled = false;
+  document.getElementById('btn-start').disabled = true;
   resetSubmitBtn();
 
   window.scrollTo({ top: document.getElementById('quiz-area').offsetTop - 80, behavior: 'smooth' });
@@ -834,21 +875,28 @@ function renderQuiz() {
   const area = document.getElementById('quiz-area');
 
   area.innerHTML = currentQuiz.map((q, i) => {
-    // 将 ______(word) 替换为单空输入框
-    const blankRegex = /______\s*\(([^)]+)\)/;
+    // 处理多个 ______(word) 占位符
+    let blankIndex = 0;
+    const hasMultiAnswers = Array.isArray(q.answers);
+    const blankRegex = /______\s*\(([^)]+)\)/g;
     const sentenceHtml = q.sentence.replace(blankRegex, (match, word) => {
+      const idx = blankIndex++;
+      const w = word.trim();
       return `<span class="q-blank">
-        <input type="text" class="q-input" id="quiz-input-${i}-0"
-          placeholder="${escapeHtml(word)}" autocomplete="off"
-          style="width:${Math.max(140, word.length * 16)}px;display:inline-block;">
+        <input type="text" class="q-input" id="quiz-input-${i}-${idx}"
+          placeholder="${escapeHtml(w)}" autocomplete="off"
+          style="width:${Math.max(140, w.length * 16)}px;display:inline-block;">
       </span>`;
     });
 
     // 难度标签
-    let diffClass = 'diff-medium';
-    let diffLabel = '中等';
+    let diffClass = 'diff-normal';
+    let diffLabel = '普通';
     if (q.difficulty === 'easy') { diffClass = 'diff-easy'; diffLabel = '简单'; }
+    if (q.difficulty === 'normal') { diffClass = 'diff-normal'; diffLabel = '普通'; }
     if (q.difficulty === 'hard') { diffClass = 'diff-hard'; diffLabel = '困难'; }
+    if (q.difficulty === 'hell') { diffClass = 'diff-hell'; diffLabel = '地狱'; }
+    if (q.difficulty === 'abyss') { diffClass = 'diff-abyss'; diffLabel = '深渊'; }
 
     return `
       <div class="quiz-item" id="quiz-item-${i}">
@@ -1092,6 +1140,28 @@ function levenshteinDist(a, b) {
   return dp[m][n];
 }
 
+function getAnswers(q) {
+  // 统一获取答案数组：支持 answer (单空) 和 answers (多空)
+  if (Array.isArray(q.answers)) return q.answers;
+  return q.answer ? [q.answer] : [];
+}
+
+function countBlanks(q) {
+  const matches = q.sentence.match(/______\s*\(([^)]+)\)/g);
+  return matches ? matches.length : 1;
+}
+
+function grabUserAnswers(q, i) {
+  const n = countBlanks(q);
+  const arr = [];
+  for (let j = 0; j < n; j++) {
+    const inp = document.getElementById(`quiz-input-${i}-${j}`);
+    arr.push(inp ? inp.value : '');
+    if (inp) inp.disabled = true;
+  }
+  return arr;
+}
+
 function submitQuiz() {
   if (!currentQuiz || quizSubmitted) return;
 
@@ -1109,13 +1179,17 @@ function submitQuiz() {
   currentQuiz.forEach((q, i) => {
     const item = document.getElementById(`quiz-item-${i}`);
     const feedbackDiv = document.getElementById(`feedback-${i}`);
-    const input = document.getElementById(`quiz-input-${i}-0`);
-    const userAns = input ? input.value : '';
-    if (input) input.disabled = true;
+    const correctAnswers = getAnswers(q);
+    const userAnswers = grabUserAnswers(q, i);
 
-    const isCorrect = checkAnswer(userAns, q.answer);
+    // 判断每一空是否正确
+    const blankResults = correctAnswers.map((correctAns, bi) => {
+      const userAns = userAnswers[bi] || '';
+      return { userAns, correctAns, ok: checkAnswer(userAns, correctAns) };
+    });
+    const allCorrect = blankResults.every(br => br.ok);
 
-    if (isCorrect) {
+    if (allCorrect) {
       correctCount++;
       item.classList.add('correct');
       item.classList.remove('wrong');
@@ -1126,33 +1200,45 @@ function submitQuiz() {
       errorTenseCount[q.tense]++;
     }
 
-    let analysis = '';
-    if (!isCorrect) {
-      analysis = analyzeMistake(userAns, q.answer, q.tense);
-    }
-
+    // 生成反馈 HTML
     let feedbackHtml = '';
-    if (isCorrect) {
-      feedbackHtml += `<div>✅ 正确答案：<span class="correct-ans">${escapeHtml(q.answer)}</span> ✓</div>`;
+    if (allCorrect) {
+      const ansStr = correctAnswers.join(' , ');
+      feedbackHtml += `<div>✅ 正确答案：<span class="correct-ans">${escapeHtml(ansStr)}</span> ✓</div>`;
     } else {
-      feedbackHtml += `<div>❌ 你的答案 <span class="your-answer">"${escapeHtml(userAns || '（未填）')}"</span> → 正确答案 <span class="correct-ans">${escapeHtml(q.answer)}</span></div>`;
+      blankResults.forEach((br, bi) => {
+        if (br.ok) {
+          feedbackHtml += `<div>✅ 空${bi + 1}：<span class="correct-ans">${escapeHtml(br.correctAns)}</span> ✓</div>`;
+        } else {
+          feedbackHtml += `<div>❌ 空${bi + 1}：你的 <span class="your-answer">"${escapeHtml(br.userAns || '（未填）')}"</span> → 正确 <span class="correct-ans">${escapeHtml(br.correctAns)}</span></div>`;
+        }
+      });
     }
     feedbackHtml += `<div class="explanation">💡 涉及时态：<span class="tense-tag" onclick="showTenseModal('${escapeHtml(q.tense)}')">${escapeHtml(q.tense)}</span></div>`;
-    if (analysis) {
-      feedbackHtml += `<div class="q-analysis">🔍 <strong>问题分析：</strong>${escapeHtml(analysis)}</div>`;
+
+    // 错题分析：对每个错误空分别分析
+    if (!allCorrect) {
+      blankResults.forEach((br, bi) => {
+        if (!br.ok) {
+          const analysis = analyzeMistake(br.userAns, br.correctAns, q.tense);
+          feedbackHtml += `<div class="q-analysis">🔍 <strong>空${bi + 1} 问题分析：</strong>${escapeHtml(analysis)}</div>`;
+        }
+      });
     }
 
     feedbackDiv.innerHTML = feedbackHtml;
 
     results.push({
       sentence: q.sentence,
-      answer: q.answer,
-      userAnswer: userAns,
-      isCorrect: isCorrect,
+      answer: correctAnswers.length === 1 ? correctAnswers[0] : correctAnswers,
+      answers: correctAnswers,
+      userAnswer: userAnswers.length === 1 ? userAnswers[0] : userAnswers,
+      userAnswers: userAnswers,
+      isCorrect: allCorrect,
+      blankResults: blankResults,
       tense: q.tense,
       difficulty: q.difficulty,
-      translation: q.translation || '',
-      analysis: analysis
+      translation: q.translation || ''
     });
   });
 
@@ -1187,6 +1273,7 @@ function submitQuiz() {
   btn.style.color = '#8899aa';
   btn.style.boxShadow = 'none';
   btn.disabled = false;
+  document.getElementById('btn-start').disabled = false;
 
   document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
 }
@@ -1204,9 +1291,27 @@ function renderResults(accuracy, correctCount, totalQuestions, results) {
   function buildReviewHtml(item) {
     const cls = item.isCorrect ? 'correct-review' : 'wrong-review';
     const icon = item.isCorrect ? '✅' : '❌';
-    let detailHtml = item.isCorrect
-      ? `<div>· <span style="color:#00b894;">${escapeHtml(item.answer)}</span> ✓</div>`
-      : `<div>· <span class="rev-user">${escapeHtml(item.userAnswer || '（未填）')}</span> → <span style="color:#00b894;">${escapeHtml(item.answer)}</span></div>`;
+    const isMulti = Array.isArray(item.answers);
+    let detailHtml = '';
+    if (item.isCorrect) {
+      const ansStr = isMulti ? item.answers.join(' , ') : escapeHtml(item.answer);
+      detailHtml = `<div>· <span style="color:#00b894;">${ansStr}</span> ✓</div>`;
+    } else {
+      const blanks = item.blankResults || [];
+      if (blanks.length > 0) {
+        detailHtml = blanks.map((br, bi) => {
+          if (br.ok) {
+            return `<div>· 空${bi + 1}：<span style="color:#00b894;">${escapeHtml(br.correctAns)}</span> ✓</div>`;
+          } else {
+            return `<div>· 空${bi + 1}：<span class="rev-user">${escapeHtml(br.userAns || '（未填）')}</span> → <span style="color:#00b894;">${escapeHtml(br.correctAns)}</span></div>`;
+          }
+        }).join('');
+      } else {
+        const ua = Array.isArray(item.userAnswer) ? item.userAnswer.join(' , ') : (item.userAnswer || '（未填）');
+        const ca = Array.isArray(item.answer) ? item.answer.join(' , ') : item.answer;
+        detailHtml = `<div>· <span class="rev-user">${escapeHtml(ua)}</span> → <span style="color:#00b894;">${escapeHtml(ca)}</span></div>`;
+      }
+    }
 
     return `
       <div class="review-item ${cls}">
@@ -1283,21 +1388,30 @@ function showHistoryDetail(index) {
   const results = record.results || [];
   const totalQ = record.totalQuestions || record.totalBlanks || 10;
 
-  let html = `<div style="font-weight:600;margin-bottom:8px;color:#e0e0e0;">📊 ${record.correct}/${totalQ} 题正确 · ${record.accuracy}%</div>`;
+  let html = `<div style="font-weight:600;margin-bottom:8px;color:#2d3436;">📊 ${record.correct}/${totalQ} 题正确 · ${record.accuracy}%</div>`;
   if (results.length === 0) {
     html += '<div style="color:#8899aa;">无详细信息</div>';
   } else {
-    results.forEach((r, i) => {
+    results.forEach((r) => {
       const icon = r.isCorrect !== undefined ? (r.isCorrect ? '✅' : '❌') : (r.allCorrect ? '✅' : '❌');
-      const answer = r.answer || (r.answers ? r.answers.join(', ') : '');
-      const userAnswer = r.userAnswer || (r.userAnswers ? r.userAnswers.join(', ') : '');
-      const analysisText = r.analysis || '';
+      const hasMulti = Array.isArray(r.answers);
+      const answer = hasMulti ? r.answers.join(' , ') : (r.answer || '');
+      const userAnswer = hasMulti ? (r.userAnswers ? r.userAnswers.join(' , ') : '') : (r.userAnswer || '');
+      const blanks = r.blankResults || [];
+      let extraHtml = '';
+      if (hasMulti && blanks.length > 0) {
+        extraHtml = blanks.map((br, bi) => {
+          const bIcon = br.ok ? '✅' : '❌';
+          const bColor = br.ok ? '#00b894' : '#e17055';
+          return `<span style="font-size:12px;color:${bColor};">${bIcon} 空${bi+1}：${escapeHtml(br.userAns||'未填')} → ${escapeHtml(br.correctAns)}</span>`;
+        }).join('<br>') + '<br>';
+      }
       html += `<div style="margin-bottom:6px;padding:6px;border-radius:6px;background:${icon === '✅' ? 'rgba(0,184,148,0.06)' : 'rgba(225,112,85,0.06)'};">
         ${icon} ${escapeHtml(r.sentence)}<br>
+        ${extraHtml}
         <span style="font-size:12px;color:#5a6a7a;">答案：${escapeHtml(answer)}</span>
-        ${icon === '❌' ? `<span style="font-size:12px;color:#e17055;"> · 你的：${escapeHtml(userAnswer || '（未填）')}</span>` : ''}
+        ${icon === '❌' && !hasMulti ? `<span style="font-size:12px;color:#e17055;"> · 你的：${escapeHtml(userAnswer || '（未填）')}</span>` : ''}
         <span class="hd-tense" onclick="showTenseModal('${escapeHtml(r.tense)}')">📖 ${escapeHtml(r.tense)}</span>
-        ${analysisText ? `<div style="margin-top:4px;padding:4px 8px;background:#fef9e7;border-radius:4px;font-size:12px;color:#7d6608;border-left:3px solid #e67e22;">🔍 ${escapeHtml(analysisText)}</div>` : ''}
       </div>`;
     });
   }

@@ -62,6 +62,7 @@ body {
   box-shadow: 0 4px 12px rgba(102,126,234,0.4);
 }
 .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(102,126,234,0.5); }
+.btn-primary:disabled { background: #b2bec3; color: #636e72; box-shadow: none; cursor: not-allowed; transform: none; }
 .btn-danger { background: #ff4757; color: #fff; }
 .btn-danger:hover { background: #ee3344; }
 .btn-outline { background: #fff; color: #667eea; border: 2px solid #667eea; }
@@ -283,7 +284,7 @@ body {
         </div>
 
         <div id="quiz-actions" style="display:none; margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="startQuiz()">🔄 开始测验（乱序）</button>
+          <button class="btn btn-primary" onclick="startQuiz()" id="btn-start">🔄 开始测验（乱序）</button>
           <button class="btn btn-green" onclick="submitQuiz()" id="btn-submit">✅ 提交检测</button>
         </div>
 
@@ -957,6 +958,7 @@ function onQuizSourceChange() {
   currentQuiz = null;
   quizSubmitted = false;
   quizActive = false;
+  document.getElementById('btn-start').disabled = false;
   updateTabLock();
   resetSubmitBtn();
 }
@@ -992,6 +994,7 @@ function startQuiz() {
   quizActive = true;
   renderQuiz();
   document.getElementById('result-area').style.display = 'none';
+  document.getElementById('btn-start').disabled = true;
   resetSubmitBtn();
   updateTabLock();
 
@@ -1331,6 +1334,7 @@ async function submitQuiz() {
   submitBtn.style.background = '#ccc';
   submitBtn.style.boxShadow = 'none';
   submitBtn.disabled = false;
+  document.getElementById('btn-start').disabled = false;
 
   resultArea.scrollIntoView({ behavior: 'smooth' });
 }
